@@ -15,4 +15,3 @@ raw_data <- read_stata(paste(load.path, "data_Deming_2008_0217.dta", sep ="")) #
 
 glimpse(raw_data)
 
-.libPaths()

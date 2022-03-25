@@ -31,7 +31,7 @@ variable_list <- list(ChildID-hhID)
 #statement
 #}
 for(variable in variable_list){
-  
+  a
 }
   
 

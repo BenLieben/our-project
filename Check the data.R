@@ -28,11 +28,20 @@ attach(raw_data)
 #change all NA values to 0:
 raw_data[is.na(raw_data)] <- 0
   
-#add all the ages(Age_Mo86 till Age_Mo104) in a new variable with mutate
-#age needs to be > 4 or >= 5 by 1990 so they are > 18 or >= 19 by 2004: use a filter to select the correct values
+#age needs to be > 4 or >= 5 by 1990 so they are > 18 or >= 19 by 2004: use a filter to select the correct values (Age_Mo104)
+#ages are in months so 19*12 = 228
+age_restriction <- raw_data %>%      #te weinig al, het max? nemen tussen PPVTAge en Age_Mo104?
+  filter(Age_Mo104 >= 228)
+
+#families with at least 2 age-eligible children, group_by mother
+at_least_two_restriction <- age_restriction%>%
+  group_by(MotherID)%>%
+  count()%>%
+  filter(n >= 2)%>%
+  ungroup()   #werkt niet
 
 
-
+#for covariates: select all the needed ones and group_by
 
 
 #2)

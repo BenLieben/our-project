@@ -126,15 +126,21 @@ age_restriction <- age_combined %>%   #ages are in months so 19*12 = 228
 
 #Next restrict the sample to families with at least 2 age-eligible children;
 #families with at least 2 age-eligible children, group_by mother
-at_least_two_restriction <- age_restriction%>%
-  group_by(MotherID)%>%
-  count()%>%
-  filter(n >= 2)%>%
-  ungroup() #doesn't work
-#also, to little already
+age_restriction %>%
+  group_by(MotherID) %>%
+  summarise(n = n())%>%
+  filter(n >= 2) %>%
+  ungroup()
+#also, to little already, maybe with ungrouping it will be correct but ungroup() doens't work
+
+'at_least_two_restriction <- age_restriction %>%
+  group_by(MotherID) %>%
+  count() %>%
+  filter(n >= 2)
+'
 
 
-#for covariates: select all the needed ones and group_by
+#for covariates: select all the needed ones and use group_by for the categories at the top
 
 
 #2)

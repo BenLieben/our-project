@@ -119,25 +119,40 @@ age_combined <- bind_rows(age_mo_given_104, age_mo_given_102, age_mo_given_100, 
                           age_PPVT_given_90, age_PPVT_given_92, age_PPVT_given_94, age_PPVT_given_96, age_PPVT_given_98, 
                           age_PPVT_given_100, age_PPVT_given_102, age_PPVT_given_104, .id = NULL)
 
-age_restriction <- age_combined %>%   #ages are in months so 19*12 = 228
-  filter(Age_correct >= 228)
-#still 5022 observations left, this is possible
+#Want to account in some way for the fact that people are surveyed at different times of the year
+#So I chose 4 years, 6 months - these kids are almost certainly too old to enroll if they are not already in the program
+#Estimates in the paper are not sensitive to this rule
+age_restriction <- age_combined %>%   #ages are in months and they chose 4.5 years --> 18.5*12 = 222
+  filter(Age_correct >= 222)
+#still 5365 observations left, this is possible
 
 
 #Next restrict the sample to families with at least 2 age-eligible children;
 #families with at least 2 age-eligible children, group_by mother
-age_restriction %>%
+grouped_by_mother <- age_restriction %>%
   group_by(MotherID) %>%
-  summarise(n = n())%>%
-  filter(n >= 2) %>%
+  mutate(count = n()) %>%
   ungroup()
-#also, to little already, maybe with ungrouping it will be correct but ungroup() doens't work
 
-'at_least_two_restriction <- age_restriction %>%
-  group_by(MotherID) %>%
-  count() %>%
-  filter(n >= 2)
-'
+at_least_2_children_restriction <- grouped_by_mother %>%
+  filter(count >= 2)
+#3967 still now, needs to be higher than 3698, so still possible (269 too many)
+
+#Exclude small number of kids who died prior to eligibility;
+#86: 68, 88: 77, 90: 70, 104: 92
+#why 104? 
+at_least_2_children_restriction %>%
+  filter(Res86 != 8) %>%
+  filter(Res88 != 8) %>%
+  filter(Res90 != 8) %>%
+  filter(Res92 != 8) %>%
+  filter(Res94 != 8) %>%
+  filter(Res96 != 8) %>%
+  filter(Res98 != 8) %>%
+  filter(Res100 != 8) %>%
+  filter(Res102 != 8) %>%
+  filter(Res104 != 8)
+#still 3849 after this --> too many, needs to be 3698
 
 
 #for covariates: select all the needed ones and use group_by for the categories at the top

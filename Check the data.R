@@ -141,22 +141,57 @@ at_least_2_children_restriction <- grouped_by_mother %>%
 #Exclude small number of kids who died prior to eligibility;
 #86: 68, 88: 77, 90: 70, 104: 92
 #why 104? 
-at_least_2_children_restriction %>%
+excluded_the_ones_that_died <- at_least_2_children_restriction %>%
   filter(Res86 != 8) %>%
   filter(Res88 != 8) %>%
-  filter(Res90 != 8) %>%
-  filter(Res92 != 8) %>%
-  filter(Res94 != 8) %>%
-  filter(Res96 != 8) %>%
-  filter(Res98 != 8) %>%
-  filter(Res100 != 8) %>%
-  filter(Res102 != 8) %>%
-  filter(Res104 != 8)
-#still 3849 after this --> too many, needs to be 3698
+  filter(Res90 != 8)
+#still 3879 after this --> too many, needs to be 3698
 
+#Oversample?
+#HowLong_HS
+
+#still some more
+final_data_set <- excluded_the_ones_that_died
 
 #for covariates: select all the needed ones and use group_by for the categories at the top
+#Race_Child: 1 Hispanic en 3 White samen, 2 voor Black
+Hispanic <- excluded_the_ones_that_died %>%
+  filter(Race_Child == 1) %>%
+  mutate(Race_Child_Correct = "Hispanic")
 
+White <- excluded_the_ones_that_died %>%
+  filter(Race_Child == 3) %>%
+  mutate(Race_Child_Correct = "White")
+
+Black <- excluded_the_ones_that_died %>%
+  filter(Race_Child == 2) %>%
+  mutate(Race_Child_Correct = "Black")
+
+races_combined <- bind_rows(Hispanic, White, Black, .id = NULL)
+
+#Ever_HS, Ever_Preschool, None???
+#Ever_HS --> 1, Ever_Preschool --> 1, None: bij ze alle twee 0????
+HeadStart_Correct <- races_combined %>%
+  mutate(HeadStart = Ever_HS88 + Ever_HS90) %>%
+  filter(HeadStart >= 1) %>%
+  mutate(Education = "Head Start")
+
+Pre_School_Correct <- races_combined %>%
+  mutate(Pre_School = Ever_Preschool88 + Ever_Preschool90) %>%
+  filter(Pre_School >= 1) %>%
+  mutate(Education = "Pre-School")
+  
+No_Headstart_or_Preschool <- races_combined %>%
+  mutate(HeadStart = Ever_HS88 + Ever_HS90) %>%
+  mutate(Pre_School = Ever_Preschool88 + Ever_Preschool90) %>%
+  filter(HeadStart == 0) %>%
+  filter(Pre_School == 0) %>%
+  mutate(Education = "None")
+
+education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headstart, No_Preschool, .id = NULL)
+#too much, something went wrong
+
+#variables on the left: Permanent Income, Mother<HS, Mother some college, Maternal AFQT, Grandmother's Education
 
 #2)
 #Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)

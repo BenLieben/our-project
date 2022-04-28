@@ -191,7 +191,42 @@ No_Headstart_or_Preschool <- races_combined %>%
 education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headstart, No_Preschool, .id = NULL)
 #too much, something went wrong
 
-#variables on the left: Permanent Income, Mother<HS, Mother some college, Maternal AFQT, Grandmother's Education
+#correct data:
+#for table 2 and 5 (not necessary)
+extra_data <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
+attach(extra_data)
+glimpse(extra_data)
+
+#for table 1? and 4 (THIS ISN'T 3698 as mentioned in the paper) (age 18 also???)
+correct_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
+attach(correct_data)
+glimpse(correct_data)
+
+#HOW do we get to the numbers, just means and sd in a table?
+#okay to replace all NA's with 0's?
+#also need sample size
+
+#variables on the left: Permanent Income, Mother<HS, Mother some college, Maternal AFQT, Grandmother's Education:
+#Permanent Income = PermInc_std ???
+#Mother<HS = MomHS ???
+#Mother some college = MomSomeColl
+#Maternal AFQT = impAFQT_std ???
+#Grandmother's education = GMom_0to3_miss OR GMom_0to_3_imp ???
+
+#grouping by: black/non-black (Black)
+#HS/pre-school/none (new variable Education: HS2_FE90 == 1, Pre2_FE90 == 1, HS2_FE90 == 0, Pre2_FE90 == 0)
+
+
+#fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
+#first group_by mother, then add up all education, and two need to be 1 or higher???
+
+#extra column: Head start—none diff. (in SD units) ???
+
+
+
+
+
+
 
 #2)
 #Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)

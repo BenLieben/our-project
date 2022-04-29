@@ -203,7 +203,7 @@ correct_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.d
 attach(correct_data)
 glimpse(correct_data)
 
-#for table 2 and 5 (not necessary) ALSO FOR 1 (NECESSARY)
+#for table 2 and 5 (not necessary) ALSO FOR 1 (NECESSARY) (loaded in seperately below)
 extra_data <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
 attach(extra_data)
 glimpse(extra_data)

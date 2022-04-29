@@ -191,37 +191,54 @@ No_Headstart_or_Preschool <- races_combined %>%
 education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headstart, No_Preschool, .id = NULL)
 #too much, something went wrong
 
-#correct data:
-#for table 2 and 5 (not necessary)
-extra_data <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
-attach(extra_data)
-glimpse(extra_data)
 
-#for table 1? and 4 (THIS ISN'T 3698 as mentioned in the paper) (age 18 also???)
+
+
+
+
+
+#CORRECT DATA:
+#for table 3 and 4 (still for table 4?)
 correct_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
 attach(correct_data)
 glimpse(correct_data)
 
-#HOW do we get to the numbers, just means and sd in a table?
-#okay to replace all NA's with 0's?
-#also need sample size
+#for table 2 and 5 (not necessary) ALSO FOR 1 (NECESSARY)
+extra_data <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
+attach(extra_data)
+glimpse(extra_data)
 
 #variables on the left: Permanent Income, Mother<HS, Mother some college, Maternal AFQT, Grandmother's Education:
-#Permanent Income = PermInc_std ???
-#Mother<HS = MomHS ???
-#Mother some college = MomSomeColl
-#Maternal AFQT = impAFQT_std ???
-#Grandmother's education = GMom_0to3_miss OR GMom_0to_3_imp ???
+#grouping by race and education:
 
-#grouping by: black/non-black (Black)
-#HS/pre-school/none (new variable Education: HS2_FE90 == 1, Pre2_FE90 == 1, HS2_FE90 == 0, Pre2_FE90 == 0)
+#FOR TABLE 1:
+deming <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
+dim(deming) #11470x1230
+deming_new <- deming %>%
+  mutate(Race = case_when(Black == 1 ~ "Black", NonBlack == 1 ~ "White/Hispanic"),
+    preschool_status = case_when(HS2_90 == 1 ~ "Head Start", Pre2_90 == 1 ~ "Preschool", None2_90 == 1 ~ "None")) %>%
+  select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>% #change name with mutate first?
+  drop_na()
 
+deming_table1_mean <- deming_new %>%
+  group_by(Race, preschool_status) %>%
+  summarise(across(where(is.numeric), ~ mean(.x)), n = n())
+print(deming_table1_mean)
+
+deming_table1_sd <- deming_new %>%
+  group_by(Race, preschool_status) %>%
+  summarise(across(where(is.numeric), ~ sd(.x)), n = n())
+print(deming_table1_sd)
+#join these 2 tables
 
 #fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
 #first group_by mother, then add up all education, and two need to be 1 or higher???
 
-#extra column: Head start—none diff. (in SD units) ???
+deming_Fixed_Effects <- deming %>%
+  group_by()
 
+
+#FOR TABLE 4:
 
 
 

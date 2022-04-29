@@ -1,8 +1,10 @@
 #Check the data
 #install.packages("tidyverse")
 #install.packages("rlang")
+install.packages("stargazer")
 library(tidyverse)
 library(haven)
+library(stargazer)
 
 load.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 save.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
@@ -229,19 +231,41 @@ deming_table1_sd <- deming_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ sd(.x)), n = n())
 print(deming_table1_sd)
-#join these 2 tables
+#join these 2 tables? try it
+
 
 #fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
-#first group_by mother, then add up all education, and two need to be 1 or higher???
+fixed_effects <- deming %>%
+  filter(Elig2_90 == 1)%>%
+  filter(Res104 != 8)
 
-deming_Fixed_Effects <- deming %>%
-  group_by()
+fixed_effects_new <- fixed_effects %>%
+  mutate(Race = case_when(Black == 1 ~ "Black", NonBlack == 1 ~ "White/Hispanic"),
+         preschool_status = case_when(HS2_90 == 1 ~ "Head Start", Pre2_90 == 1 ~ "Preschool", None2_90 == 1 ~ "None")) %>%
+  select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>% #change name with mutate first?
+  drop_na()
+#send mail to Teshome Deressa
 
+#nog niet: (FIRST CORRECT SAMPLE SIZE)
+fixed_effects_table1_mean <- fixed_effects %>%
+  group_by(Race, preschool_status) %>%
+  summarise(across(where(is.numeric), ~ mean(.x)), n = n())
+print(fixed_effects_table1_mean)
 
-#FOR TABLE 4:
+fixed_effects_table1_sd <- fixed_effects %>%
+  group_by(Race, preschool_status) %>%
+  summarise(across(where(is.numeric), ~ sd(.x)), n = n())
+print(fixed_effects_table1_sd)
 
+#stargazer or excel to get it in the correct shape
+#write in the paper, document very well, it's not documented well
 
+#FOR TABLE 4: (HUXREG) (1251 sample size)
 
+#effect on test scores
+#Group_5to6, Group_7to10, Group_11to14 and mutate a new variabele with sum of all three
+#HS and pre overall: sum of all the variables with HS and pre??
+#pre-treatment covariates: ??? and sibling fixed-effects
 
 
 

@@ -1,7 +1,7 @@
 #Check the data
 #install.packages("tidyverse")
 #install.packages("rlang")
-install.packages("stargazer")
+#install.packages("stargazer")
 library(tidyverse)
 library(haven)
 library(stargazer)
@@ -200,10 +200,10 @@ education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headst
 
 
 #CORRECT DATA:
-#for table 3 and 4 (still for table 4?)
-correct_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
-attach(correct_data)
-glimpse(correct_data)
+#for table 3 and 4 (still for table 4)
+deming_table_4_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
+attach(deming_table_4_data)
+glimpse(deming_table_4_data)
 
 #for table 2 and 5 (not necessary) ALSO FOR 1 (NECESSARY) (loaded in seperately below)
 extra_data <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
@@ -213,7 +213,7 @@ glimpse(extra_data)
 #variables on the left: Permanent Income, Mother<HS, Mother some college, Maternal AFQT, Grandmother's Education:
 #grouping by race and education:
 
-#FOR TABLE 1:
+#FOR TABLE 1: (STARGAZER package) (or excel to get it in the correct shape)
 deming <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
 dim(deming) #11470x1230
 deming_new <- deming %>%
@@ -232,27 +232,28 @@ deming_table1_sd <- deming_new %>%
   summarise(across(where(is.numeric), ~ sd(.x)), n = n())
 print(deming_table1_sd)
 #join these 2 tables? try it
+#USE STARGAZER
 
 
-#fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
+#fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool. (should be 1663 observations)
 fixed_effects <- deming %>%
-  filter(Elig2_90 == 1)%>%
-  filter(Res104 != 8)
+  filter(Elig2_90 == 1, Res104 != 8)
 
 fixed_effects_new <- fixed_effects %>%
   mutate(Race = case_when(Black == 1 ~ "Black", NonBlack == 1 ~ "White/Hispanic"),
          preschool_status = case_when(HS2_90 == 1 ~ "Head Start", Pre2_90 == 1 ~ "Preschool", None2_90 == 1 ~ "None")) %>%
-  select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>% #change name with mutate first?
+  select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>%
   drop_na()
+
 #send mail to Teshome Deressa
 
-#nog niet: (FIRST CORRECT SAMPLE SIZE)
-fixed_effects_table1_mean <- fixed_effects %>%
+#not yet: (FIRST CORRECT SAMPLE SIZE)
+fixed_effects_table1_mean <- fixed_effects_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ mean(.x)), n = n())
 print(fixed_effects_table1_mean)
 
-fixed_effects_table1_sd <- fixed_effects %>%
+fixed_effects_table1_sd <- fixed_effects_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ sd(.x)), n = n())
 print(fixed_effects_table1_sd)

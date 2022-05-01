@@ -237,11 +237,12 @@ print(deming_table1_sd)
 
 #fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool. (should be 1663 observations)
 fixed_effects <- deming %>%
-  filter(Elig2_90 == 1, Res104 != 8)
+  filter(Elig2_90 == 1) %>%
+  filter(Res104 != 8)
 
 fixed_effects_new <- fixed_effects %>%
   mutate(Race = case_when(Black == 1 ~ "Black", NonBlack == 1 ~ "White/Hispanic"),
-         preschool_status = case_when(HS2_90 == 1 ~ "Head Start", Pre2_90 == 1 ~ "Preschool", None2_90 == 1 ~ "None")) %>%
+         preschool_status = case_when(HS2_FE90 == 1 ~ "Head Start", Pre2_FE90 == 1 ~ "Preschool", None2_FE90 == 1 ~ "None")) %>%
   select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>%
   drop_na()
 

@@ -221,6 +221,7 @@ deming_new <- deming %>%
     preschool_status = case_when(HS2_90 == 1 ~ "Head Start", Pre2_90 == 1 ~ "Preschool", None2_90 == 1 ~ "None")) %>%
   select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>% #change name with mutate first?
   drop_na()
+#should be 3698 observations
 
 deming_table1_mean <- deming_new %>%
   group_by(Race, preschool_status) %>%
@@ -237,18 +238,15 @@ print(deming_table1_sd)
 
 #fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool. (should be 1663 observations)
 fixed_effects <- deming %>%
-  filter(Elig2_90 == 1) %>%
-  filter(Res104 != 8)
+  filter(Elig2_90 == 1)
 
 fixed_effects_new <- fixed_effects %>%
   mutate(Race = case_when(Black == 1 ~ "Black", NonBlack == 1 ~ "White/Hispanic"),
          preschool_status = case_when(HS2_FE90 == 1 ~ "Head Start", Pre2_FE90 == 1 ~ "Preschool", None2_FE90 == 1 ~ "None")) %>%
   select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>%
   drop_na()
+#(should be 1663 observations)
 
-#send mail to Teshome Deressa
-
-#not yet: (FIRST CORRECT SAMPLE SIZE)
 fixed_effects_table1_mean <- fixed_effects_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ mean(.x)), n = n())
@@ -259,16 +257,20 @@ fixed_effects_table1_sd <- fixed_effects_new %>%
   summarise(across(where(is.numeric), ~ sd(.x)), n = n())
 print(fixed_effects_table1_sd)
 
+#VALUES ARE ALL PRETTY MUCH CORRECT
+
 #stargazer or excel to get it in the correct shape
 #write in the paper, document very well, it's not documented well
 
-#FOR TABLE 4: (HUXREG) (1251 sample size)
 
+#FOR TABLE 4: (HUXREG) (1251 sample size)
 #effect on test scores
 #Group_5to6, Group_7to10, Group_11to14 and mutate a new variabele with sum of all three
 #HS and pre overall: sum of all the variables with HS and pre??
 #pre-treatment covariates: ??? and sibling fixed-effects
 
+
+#FOR SPECIFICATION CURVE ANALYSIS:
 
 
 #2)

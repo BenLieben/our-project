@@ -281,7 +281,7 @@ for_table_3 <- deming_table_4_data %>%
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:
-
+#what variables to use???
 
 #2)
 #Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)

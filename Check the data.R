@@ -259,16 +259,25 @@ print(fixed_effects_table1_sd)
 
 #VALUES ARE ALL PRETTY MUCH CORRECT
 
-#stargazer or excel to get it in the correct shape
+#stargazer??? or excel to get it in the correct shape
 #write in the paper, document very well, it's not documented well
 
 
 
-#FOR TABLE 4: (HUXREG) (1251 sample size)
+#FOR TABLE 3 and 4: (HUXREG) (1251 sample size) (deming_table_4_data)
+#3:
 #effect on test scores
-#Group_5to6, Group_7to10, Group_11to14 and mutate a new variabele with sum of all three
+#all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomeSomeColl
+for_table_3 <- deming_table_4_data %>%
+  filter()
+
+#for pre-treatment covariates: Male, Age2_Yr104, , PreTreatIndex  
+#for fixed effects: HS2_FE90, Pre2_FE90 (PreK_FE???, PreK_FE_3???)
+
+#4:
+#Group_5to6, Group_7to10, Group_11to14 and Group_5to14
 #HS and pre overall: sum of all the variables with HS and pre??
-#pre-treatment covariates: ??? and sibling fixed-effects
+
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:

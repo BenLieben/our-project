@@ -263,6 +263,7 @@ print(fixed_effects_table1_sd)
 #write in the paper, document very well, it's not documented well
 
 
+
 #FOR TABLE 4: (HUXREG) (1251 sample size)
 #effect on test scores
 #Group_5to6, Group_7to10, Group_11to14 and mutate a new variabele with sum of all three

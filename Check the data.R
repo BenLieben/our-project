@@ -258,8 +258,7 @@ fixed_effects_table1_sd <- fixed_effects_new %>%
 print(fixed_effects_table1_sd)
 
 #VALUES ARE ALL PRETTY MUCH CORRECT
-
-#stargazer??? or excel to get it in the correct shape
+#JUST AN EXCEL TABLE
 #write in the paper, document very well, it's not documented well
 
 
@@ -269,7 +268,8 @@ print(fixed_effects_table1_sd)
 #effect on test scores
 #all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomeSomeColl
 for_table_3 <- deming_table_4_data %>%
-  filter()
+  filter() %>%
+  drop_na()
 
 #for pre-treatment covariates: Male, Age2_Yr104, , PreTreatIndex  
 #for fixed effects: HS2_FE90, Pre2_FE90 (PreK_FE???, PreK_FE_3???)

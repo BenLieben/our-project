@@ -261,27 +261,68 @@ print(fixed_effects_table1_sd)
 #JUST AN EXCEL TABLE
 #write in the paper, document very well, it's not documented well
 
-
+#FOR TABLE 2: deming data set, different names, each row is a regression
 
 #FOR TABLE 3 and 4: (HUXREG) (1251 sample size) (deming_table_4_data)
 #3:
 #effect on test scores
-#all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomeSomeColl
+#all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl
 for_table_3 <- deming_table_4_data %>%
-  filter() %>%
+  select(Test_std, HS_5to6, HS_7to10, HS_11to14, Pre_5to6, Pre_7to10, Pre_11to14, PermInc_std, impAFQT_std, MomHS, MomSomeColl,
+         HS2_FE90, Pre2_FE90,
+         Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104, HOME_Pct_0to3_imp,
+         Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp, Doctor_0to3_imp, Dentist_0to3_imp,
+         Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp, Medicaid_0to3_imp, LogInc_0to3_imp,
+         LogIncAt3_imp, Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp, Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex) %>%
   drop_na()
 
-#for pre-treatment covariates: Male, Age2_Yr104, , PreTreatIndex  
+#In mother’s HH, 0–3 can't find it, describe it
 #for fixed effects: HS2_FE90, Pre2_FE90 (PreK_FE???, PreK_FE_3???)
 
+mod5 <- lm(Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 + HS2_FE90 + Pre2_FE90 +
+             Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 + HOME_Pct_0to3_imp +
+             Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp + Doctor_0to3_imp + Dentist_0to3_imp +
+             Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp + Medicaid_0to3_imp + LogInc_0to3_imp +
+             LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp + Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex, data = for_table_3)
+summary(mod5)
+#alles erin
+
+
 #4:
-#Group_5to6, Group_7to10, Group_11to14 and Group_5to14
+#HS_5to6 + HS_7to10 + HS_11to14 in HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14
 #HS and pre overall: sum of all the variables with HS and pre??
 
+for_table_4 <- for_table_3 %>%
+  mutate(HS_5to14 = HS_5to6 + HS_7to10 + HS_11to14, Pre_5to14 = Pre_5to6 + Pre_7to10 + Pre_11to14)
+attach(for_table_4)
+
+mod_for_4a <- lm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14)
+summary(mod_for_4a)
+
+#met alles erin
+test <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 + PermInc_std + impAFQT_std +MomHS + MomSomeColl +
+           HS2_FE90 + Pre2_FE90 +
+           Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 + HOME_Pct_0to3_imp +
+           Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp + Doctor_0to3_imp + Dentist_0to3_imp +
+           Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp + Medicaid_0to3_imp + LogInc_0to3_imp +
+           LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp + Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex)
+summary(test)
+#by race, by gender, by AFQT
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:
 #what variables to use???
+
+results <- run_specs(df = for_table_3, 
+                     y = c("Test_std"), 
+                     x = c("HS_5to6"), 
+                     model = c("lm"),
+                     controls = c("HS_7to10", "HS_11to14", "Pre_5to6", "Pre_7to10", "Pre_11to14", "HS2_FE90",  "Pre2_FE90",
+                                    "Attrit",  "PPVTat3_imp",  "logBW_imp", "VLow_BW_imp",  "HealthCond_before_imp", "FirstBorn_imp", "Male", "Age2_Yr104",  "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp",  "MomCare_imp", "RelCare_imp", "NonRelCare_imp",  "Breastfed_imp",  "Doctor_0to3_imp", "Dentist_0to3_imp",
+                                    "Moth_WeightChange_imp", "Illness_1stYr_imp", "Premature_imp", "Insurance_0to3_imp", "Medicaid_0to3_imp",  "LogInc_0to3_imp",
+                                    "LogIncAt3_imp",  "Moth_HrsWorked_BefBirth_imp", "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp",  "PreTreatIndex"))
+
+plot_specs(results)
 
 #2)
 #Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)

@@ -266,7 +266,7 @@ print(fixed_effects_table1_sd)
 
 
 #FOR TABLE 3 and 4: (stargazer) (should be 1251 sample size) (deming_table_4_data)
-#3:
+#TABLE 3:
 #effect on test scores
 #all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl
 for_table_3 <- deming_table_4_data %>%
@@ -295,10 +295,37 @@ stargazer(mod1_coeftest, type = "text", digits =3)
 
 
 #COLUMN 2:
+mod2 <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
+             Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+             Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+             HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+             Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+             Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+             Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+           index = c("MotherID"),
+           stars = c('***' = 0.01, '**' = 0.05, '*' = 0.1))
 
+mod2_coeftest <- coeftest(mod2, vcov. = vcovCL, cluster =~ MotherID)
+
+summary(mod2)
+stargazer(mod2_coeftest, type = "text", digits =3)
 
 #COLUMN 3:
+mod3 <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
+             PermInc_std + impAFQT_std + MomHS + MomSomeColl +
+             Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+             Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+             HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+             Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+             Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+             Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+           index = c("MotherID"),
+           stars = c('***' = 0.01, '**' = 0.05, '*' = 0.1))
 
+mod3_coeftest <- coeftest(mod3, vcov. = vcovCL, cluster =~ MotherID)
+
+summary(mod3)
+stargazer(mod3_coeftest, type = "text", digits =3)
 
 #COLUMN 4:
 mod4 <- plm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
@@ -335,10 +362,12 @@ summary(mod5)
 stargazer(mod5_coeftest, type = "text", digits = 3)
 
 
-#FULL TABLE: (column 2 and 3 still)
-stargazer(mod1_coeftest, mod4_coeftest, mod5_coeftest, type = "text", digits =3)
+#FULL TABLE 3:
+stargazer(mod1_coeftest, mod2_coeftest, mod3_coeftest, mod4_coeftest, mod5_coeftest, type = "text", digits =3)
+#column 1 and 4 completely the same, 2, 3 and 5 a bit off. Just difference between Stata and Rstudio?? We did everything the same.
 
-#4:
+
+#TABLE 4:
 #HS_5to6 + HS_7to10 + HS_11to14 in HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14
 #HS and pre overall: sum of all the variables with HS and pre??
 
@@ -349,14 +378,7 @@ attach(for_table_4)
 mod_for_4a <- lm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14)
 summary(mod_for_4a)
 
-#met alles erin
-test <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 + PermInc_std + impAFQT_std +MomHS + MomSomeColl +
-           HS2_FE90 + Pre2_FE90 +
-           Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 + HOME_Pct_0to3_imp +
-           Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp + Doctor_0to3_imp + Dentist_0to3_imp +
-           Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp + Medicaid_0to3_imp + LogInc_0to3_imp +
-           LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp + Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex)
-summary(test)
+
 #by race, by gender, by AFQT
 
 

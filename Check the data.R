@@ -222,13 +222,14 @@ deming_table1_mean <- deming_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ mean(.x)), n = n())
 print(deming_table1_mean)
+#because of rounding, grandmother's education with preschool slightly different
 
 #table for sd:
 deming_table1_sd <- deming_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ sd(.x)), n = n())
 print(deming_table1_sd)
-
+#because of rounding, mother some coll with HS (white) slightly different
 
 #fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
 fixed_effects <- deming %>%

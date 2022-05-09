@@ -318,15 +318,26 @@ stargazer(mod4_coeftest, type = "text", digits = 3)
 
   
 #COLUMN 5:
-mod5 <- lm(Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 + HS2_FE90 + Pre2_FE90 +
+mod5 <- plm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
+              Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
              Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
              HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
              Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
              Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
-             Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex, data = for_table_3)
-summary(mod5)
-#alles erin
+             Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+            model = "within",
+            effect = "individual",
+            index = c("MotherID"),
+            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
 
+mod5_coeftest <- coeftest(mod5, vcov. = vcovHC(mod5, type = "sss", cluster = "group"))
+
+summary(mod5)
+stargazer(mod5_coeftest, type = "text", digits = 3)
+
+
+#FULL TABLE:
+stargazer(mod1_coeftest, mod4_coeftest, type = "text", digits =3)
 
 #4:
 #HS_5to6 + HS_7to10 + HS_11to14 in HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14

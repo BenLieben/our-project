@@ -272,15 +272,14 @@ print(fixed_effects_table1_sd)
 for_table_3 <- deming_table_4_data %>%
   select(Test_std, HS_5to6, HS_7to10, HS_11to14, Pre_5to6, Pre_7to10, Pre_11to14, PermInc_std, impAFQT_std, MomHS, MomSomeColl,
          AgeTest_Yr, year, Group_5to6, Group_7to10, Group_11to14, MotherID,
-         HS2_FE90, Pre2_FE90,
-         Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104, HOME_Pct_0to3_imp,
+         Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104, HOME_Pct_0to3_imp,
          Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp, Doctor_0to3_imp, Dentist_0to3_imp,
          Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp, Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp,
          Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp, Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex) %>%
   drop_na()
 
-#In mother’s HH, 0–3 can't find it, describe it
-#for fixed effects: HS2_FE90, Pre2_FE90 (PreK_FE???, PreK_FE_3???)
+#In mother’s HH, 0–3 can't find it, describe it, is it Res_0to3_imp??? (Living in Mother's HouseHold 0-3 vs. Residence 0 - 3???)
+
 
 #COLUMN 1:
 mod1 <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
@@ -320,7 +319,7 @@ stargazer(mod4_coeftest, type = "text", digits = 3)
 #COLUMN 5:
 mod5 <- plm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
               Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
-             Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+             Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
              HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
              Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
              Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
@@ -336,8 +335,8 @@ summary(mod5)
 stargazer(mod5_coeftest, type = "text", digits = 3)
 
 
-#FULL TABLE:
-stargazer(mod1_coeftest, mod4_coeftest, type = "text", digits =3)
+#FULL TABLE: (column 2 and 3 still)
+stargazer(mod1_coeftest, mod4_coeftest, mod5_coeftest, type = "text", digits =3)
 
 #4:
 #HS_5to6 + HS_7to10 + HS_11to14 in HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14

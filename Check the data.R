@@ -8,12 +8,12 @@ library(stargazer)
 library(AER)
 library(plm)
 library(specr)
+library(tidygraph)
 
 load.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 save.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 
 raw_data <- read_stata(paste(load.path, "data_Deming_2008_0217.dta", sep ="")) #loading in the data
-
 glimpse(raw_data)
 attach(raw_data)
 
@@ -152,10 +152,6 @@ excluded_the_ones_that_died <- at_least_2_children_restriction %>%
   filter(Res90 != 8)
 #still 3879 after this --> too many, needs to be 3698
 
-#Oversample?
-#HowLong_HS
-
-#still some more
 final_data_set <- excluded_the_ones_that_died
 
 #for covariates: select all the needed ones and use group_by for the categories at the top
@@ -195,6 +191,9 @@ No_Headstart_or_Preschool <- races_combined %>%
 
 education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headstart, No_Preschool, .id = NULL)
 #too much, something went wrong
+
+
+
 
 
 
@@ -397,20 +396,20 @@ stargazer(mod4_for_4a_coeftest , type = "text", digits = 3)
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:
-#what variables to use???
+#doesn't work yet, just do it with lm and column 1 of table 3??
 
-'plm_entity_fe <- function(formula, data) {
+plm_entity_fe <- function(formula, data) {
                     plm(formula = formula,
                         data = data,
                         model = "within",
                         effect = "individual")
                     }
-'
+
 
 results <-run_specs(df = for_table_3, 
                      y = c("Test_std"), 
                      x = c("HS_5to6"), 
-                     model = c("plm"),
+                     model = c("plm_entity_fe"),
                      controls = c("HS_7to10", "HS_11to14", "Pre_5to6", "Pre_7to10", "Pre_11to14",
                                   "Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
                                   "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",

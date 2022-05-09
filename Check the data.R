@@ -231,6 +231,7 @@ deming_table1_sd <- deming_new %>%
 print(deming_table1_sd)
 #because of rounding, mother some coll with HS (white) slightly different
 
+
 #fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
 fixed_effects <- deming %>%
   filter(Elig2_90 == 1)
@@ -242,11 +243,13 @@ fixed_effects_new <- fixed_effects %>%
   drop_na()
 #should be 1663 observations
 
+
 #table for mean:
 fixed_effects_table1_mean <- fixed_effects_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ mean(.x)), n = n())
 print(fixed_effects_table1_mean)
+#because of rounding, grandmother's education with preschool slightly different
 
 #table for sd:
 fixed_effects_table1_sd <- fixed_effects_new %>%

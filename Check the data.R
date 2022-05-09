@@ -7,6 +7,7 @@ library(haven)
 library(stargazer)
 library(AER)
 library(plm)
+library(specr)
 
 load.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 save.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
@@ -375,8 +376,21 @@ for_table_4 <- for_table_3 %>%
   mutate(HS_5to14 = HS_5to6 + HS_7to10 + HS_11to14, Pre_5to14 = Pre_5to6 + Pre_7to10 + Pre_11to14)
 attach(for_table_4)
 
-mod_for_4a <- lm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14)
-summary(mod_for_4a)
+mod4_for_4a <- plm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14 +
+                    Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+                    Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+                    HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+                    Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+                    Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+                    Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+                  model = "within",
+                  effect = "individual",
+                  index = c("MotherID"),
+                  stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+summary(mod4_for_4a)
+
+mod4_for_4a_coeftest <- coeftest(mod4_for_4a, vcov. = vcovHC(mod4_for_4a, type = "sss", cluster = "group"))
+stargazer(mod4_for_4a_coeftest , type = "text", digits = 3)
 
 
 #by race, by gender, by AFQT
@@ -385,17 +399,26 @@ summary(mod_for_4a)
 #FOR SPECIFICATION CURVE ANALYSIS:
 #what variables to use???
 
-results <- run_specs(df = for_table_3, 
+'plm_entity_fe <- function(formula, data) {
+                    plm(formula = formula,
+                        data = data,
+                        model = "within",
+                        effect = "individual")
+                    }
+'
+
+results <-run_specs(df = for_table_3, 
                      y = c("Test_std"), 
                      x = c("HS_5to6"), 
-                     model = c("lm"),
-                     controls = c("HS_7to10", "HS_11to14", "Pre_5to6", "Pre_7to10", "Pre_11to14", "HS2_FE90",  "Pre2_FE90",
-                                  "Attrit",  "PPVTat3_imp",  "logBW_imp", "VLow_BW_imp",  "HealthCond_before_imp", "FirstBorn_imp",
-                                  "Male", "Age2_Yr104",  "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp",  "MomCare_imp",
-                                  "RelCare_imp", "NonRelCare_imp",  "Breastfed_imp",  "Doctor_0to3_imp", "Dentist_0to3_imp",
+                     model = c("plm"),
+                     controls = c("HS_7to10", "HS_11to14", "Pre_5to6", "Pre_7to10", "Pre_11to14",
+                                  "Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
+                                  "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",
+                                  "Male", "Age2_Yr104", "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp", "MomCare_imp",
+                                  "RelCare_imp", "NonRelCare_imp", "Breastfed_imp", "Doctor_0to3_imp", "Dentist_0to3_imp",
                                   "Moth_WeightChange_imp", "Illness_1stYr_imp", "Premature_imp", "Insurance_0to3_imp",
-                                  "Medicaid_0to3_imp",  "LogInc_0to3_imp", "LogIncAt3_imp",  "Moth_HrsWorked_BefBirth_imp",
-                                  "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp",  "PreTreatIndex"))
+                                  "Medicaid_0to3_imp", "LogInc_0to3_imp", "LogIncAt3_imp", "Moth_HrsWorked_BefBirth_imp",
+                                  "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
 
 plot_specs(results)
 

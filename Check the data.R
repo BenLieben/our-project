@@ -197,25 +197,18 @@ education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headst
 
 
 
-
-
 #CORRECT DATA:
 #for table 3 and 4 (still for table 4)
 deming_table_4_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
 attach(deming_table_4_data)
 glimpse(deming_table_4_data)
 
-#for table 2 and 5 (not necessary) ALSO FOR 1 (NECESSARY) (loaded in seperately below)
-extra_data <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
-attach(extra_data)
-glimpse(extra_data)
+#FOR TABLE 1: (or excel to get it in the correct shape) (also for table 2 and 5)
 
 #variables on the left: Permanent Income, Mother<HS, Mother some college, Maternal AFQT, Grandmother's Education:
 #grouping by race and education:
-
-#FOR TABLE 1: (STARGAZER package) (or excel to get it in the correct shape)
 deming <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
-dim(deming) #11470x1230
+dim(deming)   #11470x1230
 deming_new <- deming %>%
   mutate(Race = case_when(Black == 1 ~ "Black", NonBlack == 1 ~ "White/Hispanic"),
     preschool_status = case_when(HS2_90 == 1 ~ "Head Start", Pre2_90 == 1 ~ "Preschool", None2_90 == 1 ~ "None")) %>%
@@ -223,20 +216,21 @@ deming_new <- deming %>%
   drop_na()
 #should be 3698 observations
 
+
+#table for mean:
 deming_table1_mean <- deming_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ mean(.x)), n = n())
 print(deming_table1_mean)
 
+#table for sd:
 deming_table1_sd <- deming_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ sd(.x)), n = n())
 print(deming_table1_sd)
-#join these 2 tables? try it
-#USE STARGAZER
 
 
-#fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool. (should be 1663 observations)
+#fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
 fixed_effects <- deming %>%
   filter(Elig2_90 == 1)
 
@@ -245,25 +239,29 @@ fixed_effects_new <- fixed_effects %>%
          preschool_status = case_when(HS2_FE90 == 1 ~ "Head Start", Pre2_FE90 == 1 ~ "Preschool", None2_FE90 == 1 ~ "None")) %>%
   select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>%
   drop_na()
-#(should be 1663 observations)
+#should be 1663 observations
 
+#table for mean:
 fixed_effects_table1_mean <- fixed_effects_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ mean(.x)), n = n())
 print(fixed_effects_table1_mean)
 
+#table for sd:
 fixed_effects_table1_sd <- fixed_effects_new %>%
   group_by(Race, preschool_status) %>%
   summarise(across(where(is.numeric), ~ sd(.x)), n = n())
 print(fixed_effects_table1_sd)
 
-#VALUES ARE ALL PRETTY MUCH CORRECT
-#JUST AN EXCEL TABLE
-#write in the paper, document very well, it's not documented well
+#We used excel to put it in 1 big table like they have in the paper and we compare the values
+#All the values are pretty much the same
+#FOR PAPER: document very well, it's not documented well in theirs
+
 
 #FOR TABLE 2: deming data set, different names, each row is a regression
 
-#FOR TABLE 3 and 4: (HUXREG) (1251 sample size) (deming_table_4_data)
+
+#FOR TABLE 3 and 4: (stargazer) (should be 1251 sample size) (deming_table_4_data)
 #3:
 #effect on test scores
 #all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl

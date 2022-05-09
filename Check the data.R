@@ -545,7 +545,7 @@ stargazer(mod1_for_4d_coeftest, mod2_for_4d_coeftest , type = "text", digits = 3
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:
-#doesn't work yet, just do it with lm and column 1 of table
+#doesn't work yet with plm, just do it with lm and column 1 of table
 
 '
 plm_entity_fe <- function(formula, data) {

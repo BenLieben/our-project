@@ -5,6 +5,8 @@
 library(tidyverse)
 library(haven)
 library(stargazer)
+library(AER)
+library(plm)
 
 load.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 save.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
@@ -195,8 +197,6 @@ education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headst
 
 
 
-
-
 #CORRECT DATA:
 #for table 3 and 4 (still for table 4)
 deming_table_4_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
@@ -271,6 +271,7 @@ print(fixed_effects_table1_sd)
 #all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl
 for_table_3 <- deming_table_4_data %>%
   select(Test_std, HS_5to6, HS_7to10, HS_11to14, Pre_5to6, Pre_7to10, Pre_11to14, PermInc_std, impAFQT_std, MomHS, MomSomeColl,
+         AgeTest_Yr, year, Group_5to6, Group_7to10, Group_11to14, MotherID,
          HS2_FE90, Pre2_FE90,
          Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104, HOME_Pct_0to3_imp,
          Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp, Doctor_0to3_imp, Dentist_0to3_imp,
@@ -281,6 +282,42 @@ for_table_3 <- deming_table_4_data %>%
 #In mother’s HH, 0–3 can't find it, describe it
 #for fixed effects: HS2_FE90, Pre2_FE90 (PreK_FE???, PreK_FE_3???)
 
+#COLUMN 1:
+mod1 <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
+             Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr),
+           index = c("MotherID"),
+           stars = c('***' = 0.01, '**' = 0.05, '*' = 0.1))
+
+mod1_coeftest <- coeftest(mod1, vcov. = vcovCL, cluster =~ MotherID)
+#We use a cluster robust se because they also used this in the paper
+
+summary(mod1)
+stargazer(mod1_coeftest, type = "text", digits =3)
+
+
+#COLUMN 2:
+
+
+#COLUMN 3:
+
+
+#COLUMN 4:
+mod4 <- plm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
+              Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr),
+            model = "within",
+            effect = "individual",
+            index = c("MotherID"),
+            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+
+mod4_coeftest <- coeftest(mod4, vcov. = vcovHC(mod4, type = "sss", cluster = "group"))
+#type = "sss" employs the small sample correction as used by Stata
+#Observations may be clustered by "group" (or "time") to account for serial (cross-sectional) correlation
+
+summary(mod4)
+stargazer(mod4_coeftest, type = "text", digits = 3)
+
+  
+#COLUMN 5:
 mod5 <- lm(Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 + HS2_FE90 + Pre2_FE90 +
              Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
              HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +

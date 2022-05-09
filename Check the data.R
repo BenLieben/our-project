@@ -271,7 +271,7 @@ print(fixed_effects_table1_sd)
 #all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl
 for_table_3 <- deming_table_4_data %>%
   select(Test_std, HS_5to6, HS_7to10, HS_11to14, Pre_5to6, Pre_7to10, Pre_11to14, PermInc_std, impAFQT_std, MomHS, MomSomeColl,
-         AgeTest_Yr, year, Group_5to6, Group_7to10, Group_11to14, MotherID,
+         HS2_FE90, Pre2_FE90, AgeTest_Yr, year, Group_5to6, Group_7to10, Group_11to14, MotherID,
          Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104, HOME_Pct_0to3_imp,
          Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp, Doctor_0to3_imp, Dentist_0to3_imp,
          Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp, Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp,
@@ -371,11 +371,29 @@ stargazer(mod1_coeftest, mod2_coeftest, mod3_coeftest, mod4_coeftest, mod5_coeft
 #HS_5to6 + HS_7to10 + HS_11to14 in HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14
 #HS and pre overall: sum of all the variables with HS and pre??
 
-for_table_4 <- for_table_3 %>%
-  mutate(HS_5to14 = HS_5to6 + HS_7to10 + HS_11to14, Pre_5to14 = Pre_5to6 + Pre_7to10 + Pre_11to14)
+for_table_4 <- deming_table_4_data %>%
+  mutate(HS_5to14 = HS_5to6 + HS_7to10 + HS_11to14, Pre_5to14 = Pre_5to6 + Pre_7to10 + Pre_11to14,
+         HS_Black_5to14 = HS_Black_5to6 + HS_Black_7to10 + HS_Black_11to14,
+         HS_NonBlack_5to14 = HS_NonBlack_5to6 + HS_NonBlack_7to10 + HS_NonBlack_11to14,
+         HS_Male_5to14 = HS_Male_5to6 + HS_Male_7to10 + HS_Male_11to14,
+         HS_NonMale_5to14 = HS_NonMale_5to6 + HS_NonMale_7to10 + HS_NonMale_11to14,
+         HS_lowAFQT_5to_14 = HS_lowAFQT_5to6 + HS_lowAFQT_7to10 + HS_lowAFQT_11to14,
+         HS_NonlowAFQT_5to14 = HS_NonlowAFQT_5to6, HS_NonlowAFQT_7to10, HS_NonlowAFQT_11to14) %>%
+  select(Test_std, HS_5to6, HS_7to10, HS_11to14, HS_5to14, Pre_5to6, Pre_7to10, Pre_11to14, Pre_5to14, PermInc_std, impAFQT_std, MomHS, MomSomeColl,
+         HS_Black_5to6, HS_Black_7to10, HS_Black_11to14, HS_Black_5to14, HS_NonBlack_5to6, HS_NonBlack_7to10, HS_NonBlack_11to14, HS_NonBlack_5to14,
+         HS_Male_5to6, HS_Male_7to10, HS_Male_11to14, HS_Male_5to14, HS_NonMale_5to6, HS_NonMale_7to10, HS_NonMale_11to14, HS_NonMale_5to14,
+         HS_lowAFQT_5to6, HS_lowAFQT_7to10, HS_lowAFQT_11to14, HS_lowAFQT_5to_14, HS_NonlowAFQT_5to6, HS_NonlowAFQT_7to10, HS_NonlowAFQT_11to14, HS_NonlowAFQT_5to14,
+         HS2_FE90, Pre2_FE90, AgeTest_Yr, year, Group_5to6, Group_7to10, Group_11to14, MotherID,
+         Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104, HOME_Pct_0to3_imp,
+         Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp, Doctor_0to3_imp, Dentist_0to3_imp,
+         Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp, Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp,
+         Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp, Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex) %>%
+  drop_na()
 attach(for_table_4)
 
-mod4_for_4a <- plm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14 +
+
+#4A overall:
+mod2_for_4a <- plm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14 +
                     Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                     Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
                     HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
@@ -386,26 +404,129 @@ mod4_for_4a <- plm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14 +
                   effect = "individual",
                   index = c("MotherID"),
                   stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
-summary(mod4_for_4a)
+summary(mod2_for_4a)
 
-mod4_for_4a_coeftest <- coeftest(mod4_for_4a, vcov. = vcovHC(mod4_for_4a, type = "sss", cluster = "group"))
-stargazer(mod4_for_4a_coeftest , type = "text", digits = 3)
+mod2_for_4a_coeftest <- coeftest(mod2_for_4a, vcov. = vcovHC(mod2_for_4a, type = "sss", cluster = "group"))
+stargazer(mod2_for_4a_coeftest , type = "text", digits = 3)
 
 
-#by race, by gender, by AFQT
+#4B by race:
+mod1_for_4b <- plm(data = for_table_4, Test_std ~ HS_Black_5to6 + HS_Black_7to10 + HS_Black_11to14 + HS_NonBlack_5to6 + HS_NonBlack_7to10 + HS_NonBlack_11to14 +
+              Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+              Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+              HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+              Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+              Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+              Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+            model = "within",
+            effect = "individual",
+            index = c("MotherID"),
+            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+summary(mod1_for_4b)
+
+mod1_for_4b_coeftest <- coeftest(mod1_for_4b, vcov. = vcovHC(mod1_for_4b, type = "sss", cluster = "group"))
+stargazer(mod1_for_4b_coeftest , type = "text", digits = 3)
+
+
+mod2_for_4b <- plm(data = for_table_4, Test_std ~ HS_Black_5to14 + HS_NonBlack_5to14 +
+                     Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+                     Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+                     HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+                     Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+                     Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+                     Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+                   model = "within",
+                   effect = "individual",
+                   index = c("MotherID"),
+                   stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+summary(mod2_for_4b)
+
+mod2_for_4b_coeftest <- coeftest(mod2_for_4b, vcov. = vcovHC(mod2_for_4b, type = "sss", cluster = "group"))
+stargazer(mod2_for_4b_coeftest , type = "text", digits = 3)
+
+
+#4C by gender:
+mod1_for_4c <- plm(data = for_table_4, Test_std ~ HS_Male_5to6 + HS_Male_7to10 + HS_Male_11to14 + HS_NonMale_5to6 + HS_NonMale_7to10 + HS_NonMale_11to14 +
+                     Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+                     Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+                     HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+                     Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+                     Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+                     Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+                   model = "within",
+                   effect = "individual",
+                   index = c("MotherID"),
+                   stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+summary(mod1_for_4c)
+
+mod1_for_4c_coeftest <- coeftest(mod1_for_4c, vcov. = vcovHC(mod1_for_4c, type = "sss", cluster = "group"))
+stargazer(mod1_for_4c_coeftest , type = "text", digits = 3)
+
+
+mod2_for_4c <- plm(data = for_table_4, Test_std ~ HS_Male_5to14 + HS_NonMale_5to14 +
+                     Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+                     Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+                     HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+                     Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+                     Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+                     Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+                   model = "within",
+                   effect = "individual",
+                   index = c("MotherID"),
+                   stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+summary(mod2_for_4c)
+
+mod2_for_4c_coeftest <- coeftest(mod2_for_4c, vcov. = vcovHC(mod2_for_4c, type = "sss", cluster = "group"))
+stargazer(mod2_for_4c_coeftest , type = "text", digits = 3)
+
+
+#4D by AFQT:
+mod1_for_4d <- plm(data = for_table_4, Test_std ~ HS_lowAFQT_5to6 + HS_lowAFQT_7to10 + HS_lowAFQT_11to14 + HS_NonlowAFQT_5to6 + HS_NonlowAFQT_7to10 + HS_NonlowAFQT_11to14 +
+                     Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+                     Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+                     HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+                     Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+                     Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+                     Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+                   model = "within",
+                   effect = "individual",
+                   index = c("MotherID"),
+                   stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+summary(mod1_for_4d)
+
+mod1_for_4d_coeftest <- coeftest(mod1_for_4d, vcov. = vcovHC(mod1_for_4d, type = "sss", cluster = "group"))
+stargazer(mod1_for_4d_coeftest , type = "text", digits = 3)
+
+
+mod2_for_4d <- plm(data = for_table_4, Test_std ~ HS_lowAFQT_5to_14 + HS_NonlowAFQT_5to14 +
+                     Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
+                     Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
+                     HOME_Pct_0to3_imp + Father_HH_0to3_imp + GMom_0to3_imp + MomCare_imp + RelCare_imp + NonRelCare_imp + Breastfed_imp +
+                     Doctor_0to3_imp + Dentist_0to3_imp + Moth_WeightChange_imp + Illness_1stYr_imp + Premature_imp + Insurance_0to3_imp +
+                     Medicaid_0to3_imp + LogInc_0to3_imp + LogIncAt3_imp + Moth_HrsWorked_BefBirth_imp + Moth_HrsWorked_0to1_imp +
+                     Moth_Smoke_BefBirth_imp + Alc_BefBirth_imp + PreTreatIndex,
+                   model = "within",
+                   effect = "individual",
+                   index = c("MotherID"),
+                   stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+summary(mod2_for_4d)
+
+mod2_for_4d_coeftest <- coeftest(mod2_for_4d, vcov. = vcovHC(mod2_for_4d, type = "sss", cluster = "group"))
+stargazer(mod2_for_4d_coeftest , type = "text", digits = 3)
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:
-#doesn't work yet, just do it with lm and column 1 of table 3??
+#doesn't work yet, just do it with lm and column 1 of table
 
+'
 plm_entity_fe <- function(formula, data) {
                     plm(formula = formula,
                         data = data,
                         model = "within",
                         effect = "individual")
                     }
-
-
+'
+'
 results <-run_specs(df = for_table_3, 
                      y = c("Test_std"), 
                      x = c("HS_5to6"), 
@@ -418,8 +539,21 @@ results <-run_specs(df = for_table_3,
                                   "Moth_WeightChange_imp", "Illness_1stYr_imp", "Premature_imp", "Insurance_0to3_imp",
                                   "Medicaid_0to3_imp", "LogInc_0to3_imp", "LogIncAt3_imp", "Moth_HrsWorked_BefBirth_imp",
                                   "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
+'
 
-plot_specs(results)
+results_v2 <- run_specs(df = for_table_3, 
+                        y = c("Test_std"), 
+                        x = c("HS2_FE90"), 
+                        model = c("lm"),
+                        controls = c("Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
+                                     "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",
+                                     "Male", "Age2_Yr104", "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp", "MomCare_imp",
+                                     "RelCare_imp", "NonRelCare_imp", "Breastfed_imp", "Doctor_0to3_imp", "Dentist_0to3_imp",
+                                     "Moth_WeightChange_imp", "Illness_1stYr_imp", "Premature_imp", "Insurance_0to3_imp",
+                                     "Medicaid_0to3_imp", "LogInc_0to3_imp", "LogIncAt3_imp", "Moth_HrsWorked_BefBirth_imp",
+                                     "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
+
+plot_specs(results_v2)
 
 #2)
 #Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)

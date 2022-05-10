@@ -359,7 +359,7 @@ table2_age_in_2004 <- plm(data = deming_table_2_rest,
 coef9 <- coeftest(table2_age_in_2004, vcov. = vcovHC(table2_age_in_2004, type = "sss", cluster = "group"))
 print(coef9)
 
-#HOME score, age 3:
+#HOME score, age 3: (correct)
 table2_HOMEscore_at3 <- plm(data = deming_table_2_rest,
                           HOME_Pct_0to3 ~ HS2_FE90 + Pre2_FE90,
                           model = "within",
@@ -368,66 +368,185 @@ table2_HOMEscore_at3 <- plm(data = deming_table_2_rest,
 coef10 <- coeftest(table2_HOMEscore_at3, vcov. = vcovHC(table2_HOMEscore_at3, type = "sss", cluster = "group"))
 print(coef10)
 
-#Father in HH, 0–3:
+#Father in HH, 0–3: (correct)
+table2_father_in_HH_0to3 <- plm(data = deming_table_2_rest,
+                            Father_HH_0to3 ~ HS2_FE90 + Pre2_FE90,
+                            model = "within",
+                            index = c("MotherID"),
+                            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef11 <- coeftest(table2_father_in_HH_0to3, vcov. = vcovHC(table2_father_in_HH_0to3, type = "sss", cluster = "group"))
+print(coef11)
 
+#Grandmother in HH, 0–3: (correct)
+table2_GMother_in_HH_0to3 <- plm(data = deming_table_2_rest,
+                                GMom_0to3 ~ HS2_FE90 + Pre2_FE90,
+                                model = "within",
+                                index = c("MotherID"),
+                                stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef12 <- coeftest(table2_GMother_in_HH_0to3, vcov. = vcovHC(table2_GMother_in_HH_0to3, type = "sss", cluster = "group"))
+print(coef12)
 
-#Grandmother in HH, 0–3:
+#Maternal care, age 0–3: (correct)
+table2_maternal_care_0to3 <- plm(data = deming_table_2_rest,
+                                 MomCare ~ HS2_FE90 + Pre2_FE90,
+                                 model = "within",
+                                 index = c("MotherID"),
+                                 stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef13 <- coeftest(table2_maternal_care_0to3, vcov. = vcovHC(table2_maternal_care_0to3, type = "sss", cluster = "group"))
+print(coef13)
 
+#Relative care, age 0–3: (correct)
+table2_relative_care_0to3 <- plm(data = deming_table_2_rest,
+                                 RelCare ~ HS2_FE90 + Pre2_FE90,
+                                 model = "within",
+                                 index = c("MotherID"),
+                                 stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef14 <- coeftest(table2_relative_care_0to3, vcov. = vcovHC(table2_relative_care_0to3, type = "sss", cluster = "group"))
+print(coef14)
 
-#Maternal care, age 0–3:
+#Nonrelative care, age 0–3: (correct)
+table2_non_relative_care_0to3 <- plm(data = deming_table_2_rest,
+                                 NonRelCare ~ HS2_FE90 + Pre2_FE90,
+                                 model = "within",
+                                 index = c("MotherID"),
+                                 stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef15 <- coeftest(table2_non_relative_care_0to3, vcov. = vcovHC(table2_non_relative_care_0to3, type = "sss", cluster = "group"))
+print(coef15)
 
+#Breastfed: (correct)
+table2_breastfed <- plm(data = deming_table_2_rest,
+                                     Breastfed ~ HS2_FE90 + Pre2_FE90,
+                                     model = "within",
+                                     index = c("MotherID"),
+                                     stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef16 <- coeftest(table2_breastfed, vcov. = vcovHC(table2_breastfed, type = "sss", cluster = "group"))
+print(coef16)
 
-#Relative care, age 0–3:
+#Regular doctor’s visits, age 0–3: (correct)
+table2_regular_doctor <- plm(data = deming_table_2_rest,
+                        Doctor_0to3 ~ HS2_FE90 + Pre2_FE90,
+                        model = "within",
+                        index = c("MotherID"),
+                        stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef17 <- coeftest(table2_regular_doctor, vcov. = vcovHC(table2_regular_doctor, type = "sss", cluster = "group"))
+print(coef17)
 
+#Ever been to dentist, age 0–3: (correct)
+table2_ever_dentist <- plm(data = deming_table_2_rest,
+                             Dentist_0to3 ~ HS2_FE90 + Pre2_FE90,
+                             model = "within",
+                             index = c("MotherID"),
+                             stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef18 <- coeftest(table2_ever_dentist, vcov. = vcovHC(table2_ever_dentist, type = "sss", cluster = "group"))
+print(coef18)
 
-#Nonrelative care, age 0–3:
+#Weight change during pregnancy: (correct)
+table2_weight_change <- plm(data = deming_table_2_rest,
+                           Moth_WeightChange ~ HS2_FE90 + Pre2_FE90,
+                           model = "within",
+                           index = c("MotherID"),
+                           stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef19 <- coeftest(table2_weight_change, vcov. = vcovHC(table2_weight_change, type = "sss", cluster = "group"))
+print(coef19)
 
+#Child illness, age 0–1: (correct)
+table2_child_illness <- plm(data = deming_table_2_rest,
+                            Illness_1stYr ~ HS2_FE90 + Pre2_FE90,
+                            model = "within",
+                            index = c("MotherID"),
+                            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef20 <- coeftest(table2_child_illness, vcov. = vcovHC(table2_child_illness, type = "sss", cluster = "group"))
+print(coef20)
 
-#Breastfed:
+#Premature birth: (correct)
+table2_premature_birth <- plm(data = deming_table_2_rest,
+                            Premature ~ HS2_FE90 + Pre2_FE90,
+                            model = "within",
+                            index = c("MotherID"),
+                            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef21 <- coeftest(table2_premature_birth, vcov. = vcovHC(table2_premature_birth, type = "sss", cluster = "group"))
+print(coef21)
 
+#Private health insurance, age 0–3: (correct)
+table2_health_insurance <- plm(data = deming_table_2_rest,
+                              Insurance_0to3 ~ HS2_FE90 + Pre2_FE90,
+                              model = "within",
+                              index = c("MotherID"),
+                              stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef22 <- coeftest(table2_health_insurance, vcov. = vcovHC(table2_health_insurance, type = "sss", cluster = "group"))
+print(coef22)
 
-#Regular doctor’s visits, age 0–3:
+#Medicaid, age 0–3: (correct)
+table2_medicaid_0to3 <- plm(data = deming_table_2_rest,
+                               Medicaid_0to3 ~ HS2_FE90 + Pre2_FE90,
+                               model = "within",
+                               index = c("MotherID"),
+                               stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef23 <- coeftest(table2_medicaid_0to3, vcov. = vcovHC(table2_medicaid_0to3, type = "sss", cluster = "group"))
+print(coef23)
 
+#ln (income), age 0–3: (correct)
+table2_log_income_0to3 <- plm(data = deming_table_2_rest,
+                            LogInc_0to3 ~ HS2_FE90 + Pre2_FE90,
+                            model = "within",
+                            index = c("MotherID"),
+                            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef24 <- coeftest(table2_log_income_0to3, vcov. = vcovHC(table2_log_income_0to3, type = "sss", cluster = "group"))
+print(coef24)
 
-#Ever been to dentist, age 0–3:
+#ln (income), age 3: (correct)
+table2_log_income_at3 <- plm(data = deming_table_2_rest,
+                              LogIncAt3 ~ HS2_FE90 + Pre2_FE90,
+                              model = "within",
+                              index = c("MotherID"),
+                              stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef25 <- coeftest(table2_log_income_at3, vcov. = vcovHC(table2_log_income_at3, type = "sss", cluster = "group"))
+print(coef25)
 
+#Mom average hours worked, year before birth: (correct)
+table2_avg_hours_worked_bef_birth <- plm(data = deming_table_2_rest,
+                             Moth_HrsWorked_BefBirth ~ HS2_FE90 + Pre2_FE90,
+                             model = "within",
+                             index = c("MotherID"),
+                             stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef26 <- coeftest(table2_avg_hours_worked_bef_birth, vcov. = vcovHC(table2_avg_hours_worked_bef_birth, type = "sss", cluster = "group"))
+print(coef26)
 
-#Weight change during pregnancy:
+#Mom average hours worked, age 0–1: (correct)
+table2_avg_hours_worked_0to1 <- plm(data = deming_table_2_rest,
+                                         Moth_HrsWorked_0to1 ~ HS2_FE90 + Pre2_FE90,
+                                         model = "within",
+                                         index = c("MotherID"),
+                                         stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef27 <- coeftest(table2_avg_hours_worked_0to1, vcov. = vcovHC(table2_avg_hours_worked_0to1, type = "sss", cluster = "group"))
+print(coef27)
 
+#Mom smoked before birth: (correct)
+table2_smoked_bef_birth <- plm(data = deming_table_2_rest,
+                                    Moth_Smoke_BefBirth ~ HS2_FE90 + Pre2_FE90,
+                                    model = "within",
+                                    index = c("MotherID"),
+                                    stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef28 <- coeftest(table2_smoked_bef_birth, vcov. = vcovHC(table2_smoked_bef_birth, type = "sss", cluster = "group"))
+print(coef28)
 
-#Child illness, age 0–1:
+#Mom drank before birth: (correct)
+table2_drank_bef_birth <- plm(data = deming_table_2_rest,
+                               Alc_BefBirth ~ HS2_FE90 + Pre2_FE90,
+                               model = "within",
+                               index = c("MotherID"),
+                               stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef29 <- coeftest(table2_drank_bef_birth, vcov. = vcovHC(table2_drank_bef_birth, type = "sss", cluster = "group"))
+print(coef29)
 
-
-#Premature birth:
-
-
-#Private health insurance, age 0–3:
-
-
-#Medicaid, age 0–3:
-
-
-#ln (income), age 0–3:
-
-
-#ln (income), age 3:
-
-
-#Mom average hours worked, year before birth:
-
-
-#Mom average hours worked, age 0–1:
-
-
-#Mom smoked before birth:
-
-
-#Mom drank before birth:
-
-
-#Pre-treatment index:
-
-
+#Pre-treatment index: (correct)
+table2_pre_treatment_index <- plm(data = deming_table_2_rest,
+                              PreTreatIndex ~ HS2_FE90 + Pre2_FE90,
+                              model = "within",
+                              index = c("MotherID"),
+                              stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
+coef30 <- coeftest(table2_pre_treatment_index, vcov. = vcovHC(table2_pre_treatment_index, type = "sss", cluster = "group"))
+print(coef30)
 
 #FOR TABLE 3 and 4: (stargazer) (should be 1251 sample size) (deming_table_4_data)
 #TABLE 3:

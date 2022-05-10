@@ -203,8 +203,7 @@ deming_table_4_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Ta
 attach(deming_table_4_data)
 glimpse(deming_table_4_data)
 
-#FOR TABLE 1: (or excel to get it in the correct shape) (also for table 2 and 5)
-
+#FOR TABLE 1: (also for table 2 and 5)
 #variables on the left: Permanent Income, Mother<HS, Mother some college, Maternal AFQT, Grandmother's Education:
 #grouping by race and education:
 deming <- read_stata(paste(load.path, "Deming_cleaned_data_Table 2 and 5.dta", sep ="")) #loading in the data
@@ -259,20 +258,20 @@ print(fixed_effects_table1_sd)
 
 #We used excel to put it in 1 big table like they have in the paper and we compare the values
 #All the values are pretty much the same
-#FOR PAPER: document very well, it's not documented well in theirs
+#FOR PAPER: document very well, it's not documented well in theirs (definitely to get to the final data)
 
 
 #FOR TABLE 2: deming data set, different names, each row is a regression
 #The paper filters the data for a specific subsample.
 glimpse(deming)
 
-#for Attrit and pretreatmentindex:
+#for Attrit and pretreatmentindex: (like in the Stata code)
 deming_table_2_Attrit_and_pretreatmentindex <- deming %>%
   filter((is.na(HS2_FE90) == F) & MotherID != 12 & (Age2_Yr104>=19 | (DOB_Yr_Child==1985 & DOB_Mo_Child<9)))
 dim(deming_table_2_Attrit_and_pretreatmentindex) #1722x1230
 attach(deming_table_2_Attrit_and_pretreatmentindex)
 
-#for all the rest:
+#for all the rest: (like in the Stata code)
 deming_table_2_rest <- deming %>%
   filter(Sample90_2 == 1)
 dim(deming_table_2_rest) #1251x1230
@@ -287,7 +286,7 @@ table2_Attrit <- plm(data = deming_table_2_Attrit_and_PPVT_and_pretreatmentindex
 coef1 <- coeftest(table2_Attrit, vcov. = vcovHC(table2_Attrit, type = "sss", cluster = "group"))
 print(coef1)
 
-#PPVT at age 3: (correct)
+#PPVT at age 3: (correct) (3 extra variables, like in the Stata code)
 table2_PPVT_at3 <- plm(data = deming_table_2_rest,
                     PPVTat3 ~ HS2_FE90 + Pre2_FE90 + Male + FirstBorn + Age2_Mo90,
                     model = "within",
@@ -295,6 +294,8 @@ table2_PPVT_at3 <- plm(data = deming_table_2_rest,
                     stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
 coef2 <- coeftest(table2_PPVT_at3, vcov. = vcovHC(table2_PPVT_at3, type = "sss", cluster = "group"))
 print(coef2)
+#NO STAR FOR PRE, while they do have a star for pre in the paper
+#slight differences in the sd, probably due to rounding
 
 #log BW: (correct)
 table2_logBW <- plm(data = deming_table_2_rest,
@@ -314,9 +315,9 @@ table2_very_low_BW <- plm(data = deming_table_2_rest,
 coef4 <- coeftest(table2_very_low_BW, vcov. = vcovHC(table2_very_low_BW, type = "sss", cluster = "group"))
 print(coef4)
 
-#ln mother's HH 0-3:(what variable??) #In mother’s HH, 0–3 can't find it, describe it, is it Res_0to3_???
+#ln mother's HH 0-3: (= Res_0to3) (correct)
 table2_ln_mother_HH_0to3 <- plm(data = deming_table_2_rest,
-                          ??? ~ HS2_FE90 + Pre2_FE90,
+                          Res_0to3 ~ HS2_FE90 + Pre2_FE90,
                           model = "within",
                           index = c("MotherID"),
                           stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
@@ -367,6 +368,7 @@ table2_HOMEscore_at3 <- plm(data = deming_table_2_rest,
                           stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
 coef10 <- coeftest(table2_HOMEscore_at3, vcov. = vcovHC(table2_HOMEscore_at3, type = "sss", cluster = "group"))
 print(coef10)
+#slight differences in the sd for preschool, probably due to rounding
 
 #Father in HH, 0–3: (correct)
 table2_father_in_HH_0to3 <- plm(data = deming_table_2_rest,
@@ -448,6 +450,7 @@ table2_weight_change <- plm(data = deming_table_2_rest,
                            stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
 coef19 <- coeftest(table2_weight_change, vcov. = vcovHC(table2_weight_change, type = "sss", cluster = "group"))
 print(coef19)
+#slight differences in the sd preschool, probably due to rounding
 
 #Child illness, age 0–1: (correct)
 table2_child_illness <- plm(data = deming_table_2_rest,
@@ -511,6 +514,7 @@ table2_avg_hours_worked_bef_birth <- plm(data = deming_table_2_rest,
                              stars = c('*' = 0.10, '**' = 0.05, '***' = 0.01))
 coef26 <- coeftest(table2_avg_hours_worked_bef_birth, vcov. = vcovHC(table2_avg_hours_worked_bef_birth, type = "sss", cluster = "group"))
 print(coef26)
+#slight differences in the sd, probably due to rounding
 
 #Mom average hours worked, age 0–1: (correct)
 table2_avg_hours_worked_0to1 <- plm(data = deming_table_2_rest,
@@ -548,20 +552,19 @@ table2_pre_treatment_index <- plm(data = deming_table_2_rest,
 coef30 <- coeftest(table2_pre_treatment_index, vcov. = vcovHC(table2_pre_treatment_index, type = "sss", cluster = "group"))
 print(coef30)
 
-#FOR TABLE 3 and 4: (stargazer) (should be 1251 sample size) (deming_table_4_data)
+#FOR TABLE 3 and 4: (stargazer) (should be 4687/1251 sample size) (deming_table_4_data)
 #TABLE 3:
-#effect on test scores
-#all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl
+#effect on test scores, by all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl
 for_table_3 <- deming_table_4_data %>%
   select(Test_std, HS_5to6, HS_7to10, HS_11to14, Pre_5to6, Pre_7to10, Pre_11to14, PermInc_std, impAFQT_std, MomHS, MomSomeColl,
          HS2_FE90, Pre2_FE90, AgeTest_Yr, year, Group_5to6, Group_7to10, Group_11to14, MotherID,
          Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104, HOME_Pct_0to3_imp,
          Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp, Doctor_0to3_imp, Dentist_0to3_imp,
          Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp, Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp,
-         Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp, Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex) %>%
+         Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_Avg_0to3_imp, Moth_HrsWorked_0to1_imp, Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex) %>%
   drop_na()
-
 #In mother’s HH, 0–3 can't find it, describe it, is it Res_0to3_imp??? (Living in Mother's HouseHold 0-3 vs. Residence 0 - 3???)
+#describe difficulty finding the variables
 
 
 #COLUMN 1:
@@ -592,6 +595,7 @@ mod2_coeftest <- coeftest(mod2, vcov. = vcovCL, cluster =~ MotherID)
 
 summary(mod2)
 stargazer(mod2_coeftest, type = "text", digits =3)
+
 
 #COLUMN 3:
 mod3 <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
@@ -651,8 +655,8 @@ stargazer(mod1_coeftest, mod2_coeftest, mod3_coeftest, mod4_coeftest, mod5_coeft
 
 
 #TABLE 4:
-#HS_5to6 + HS_7to10 + HS_11to14 in HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14
-#HS and pre overall: sum of all the variables with HS and pre??
+#HS_5to6 + HS_7to10 + HS_11to14 in a new variable HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14 in a new variable Pre_5to14
+#same for by race, by gender, by maternal AFQT
 
 for_table_4 <- deming_table_4_data %>%
   mutate(HS_5to14 = HS_5to6 + HS_7to10 + HS_11to14, Pre_5to14 = Pre_5to6 + Pre_7to10 + Pre_11to14,
@@ -676,6 +680,7 @@ attach(for_table_4)
 
 
 #4A overall:
+#for 5 - 6, 7 - 10, 11 - 14:
 mod1_for_4a <- plm(data = for_table_4, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
                      Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                      Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
@@ -692,7 +697,7 @@ summary(mod1_for_4a)
 mod1_for_4a_coeftest <- coeftest(mod1_for_4a, vcov. = vcovHC(mod1_for_4a, type = "sss", cluster = "group"))
 stargazer(mod1_for_4a_coeftest , type = "text", digits = 3)
 
-
+#for 5 - 14:
 mod2_for_4a <- plm(data = for_table_4, Test_std ~ HS_5to14 + Pre_5to14 +
                     Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                     Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
@@ -714,6 +719,7 @@ stargazer(mod1_for_4a_coeftest, mod2_for_4a_coeftest , type = "text", digits = 3
 
 
 #4B by race:
+#for 5 - 6, 7 - 10, 11 - 14:
 mod1_for_4b <- plm(data = for_table_4, Test_std ~ HS_Black_5to6 + HS_Black_7to10 + HS_Black_11to14 + HS_NonBlack_5to6 + HS_NonBlack_7to10 + HS_NonBlack_11to14 +
               Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
               Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
@@ -730,7 +736,7 @@ summary(mod1_for_4b)
 mod1_for_4b_coeftest <- coeftest(mod1_for_4b, vcov. = vcovHC(mod1_for_4b, type = "sss", cluster = "group"))
 stargazer(mod1_for_4b_coeftest , type = "text", digits = 3)
 
-
+#for 5 - 14
 mod2_for_4b <- plm(data = for_table_4, Test_std ~ HS_Black_5to14 + HS_NonBlack_5to14 +
                      Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                      Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
@@ -752,6 +758,7 @@ stargazer(mod1_for_4b_coeftest, mod2_for_4b_coeftest , type = "text", digits = 3
 
 
 #4C by gender:
+#for 5 - 6, 7 - 10, 11 - 14:
 mod1_for_4c <- plm(data = for_table_4, Test_std ~ HS_Male_5to6 + HS_Male_7to10 + HS_Male_11to14 + HS_NonMale_5to6 + HS_NonMale_7to10 + HS_NonMale_11to14 +
                      Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                      Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
@@ -768,7 +775,7 @@ summary(mod1_for_4c)
 mod1_for_4c_coeftest <- coeftest(mod1_for_4c, vcov. = vcovHC(mod1_for_4c, type = "sss", cluster = "group"))
 stargazer(mod1_for_4c_coeftest , type = "text", digits = 3)
 
-
+#for 5 - 14
 mod2_for_4c <- plm(data = for_table_4, Test_std ~ HS_Male_5to14 + HS_NonMale_5to14 +
                      Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                      Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
@@ -790,6 +797,7 @@ stargazer(mod1_for_4c_coeftest, mod2_for_4c_coeftest , type = "text", digits = 3
 
 
 #4D by AFQT:
+#for 5 - 6, 7 - 10, 11 - 14:
 mod1_for_4d <- plm(data = for_table_4, Test_std ~ HS_lowAFQT_5to6 + HS_lowAFQT_7to10 + HS_lowAFQT_11to14 + HS_NonlowAFQT_5to6 + HS_NonlowAFQT_7to10 + HS_NonlowAFQT_11to14 +
                      Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                      Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +
@@ -806,7 +814,7 @@ summary(mod1_for_4d)
 mod1_for_4d_coeftest <- coeftest(mod1_for_4d, vcov. = vcovHC(mod1_for_4d, type = "sss", cluster = "group"))
 stargazer(mod1_for_4d_coeftest , type = "text", digits = 3)
 
-
+#for 5 - 14
 mod2_for_4d <- plm(data = for_table_4, Test_std ~ HS_lowAFQT_5to_14 + HS_NonlowAFQT_5to14 +
                      Male + factor(year) + Group_7to10 + Group_11to14 + factor(AgeTest_Yr) +
                      Attrit + PPVTat3_imp + logBW_imp + VLow_BW_imp + Res_0to3_imp + HealthCond_before_imp + FirstBorn_imp + Male + Age2_Yr104 +

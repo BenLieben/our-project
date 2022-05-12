@@ -1,7 +1,15 @@
-#Check the data
+#to update R:
+#install.packages("installr")
+#library(installr)
+#updateR()
 #install.packages("tidyverse")
+#install.packages("haven")
 #install.packages("rlang")
 #install.packages("stargazer")
+#install.packages("AER")
+#install.packages("plm")
+#install.packages("specr")
+#install.packages("tidygraph")
 library(tidyverse)
 library(haven)
 library(stargazer)
@@ -10,6 +18,7 @@ library(plm)
 library(specr)
 library(tidygraph)
 
+
 load.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 save.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 
@@ -17,8 +26,7 @@ raw_data <- read_stata(paste(load.path, "data_Deming_2008_0217.dta", sep ="")) #
 attach(raw_data)
 glimpse(raw_data)
 
-#1)
-#First step in a replication are the descriptive tables.
+#Get the correct data for the descriptive tables
 ###############################################################################################
 #First create rules that establish sample eligibility;
 #Rule is 5 years old by 1990, so that they will be 19 by 2004;
@@ -131,7 +139,6 @@ age_restriction <- age_combined %>%   #ages are in months and they chose 4.5 yea
   filter(Age_correct >= 222)
 #still 5365 observations left, this is possible
 
-
 #Next restrict the sample to families with at least 2 age-eligible children;
 #families with at least 2 age-eligible children, group_by mother
 grouped_by_mother <- age_restriction %>%
@@ -152,10 +159,8 @@ excluded_the_ones_that_died <- at_least_2_children_restriction %>%
   filter(Res90 != 8)
 #still 3879 after this --> too many, needs to be 3698
 
-final_data_set <- excluded_the_ones_that_died
-
 #for covariates: select all the needed ones and use group_by for the categories at the top
-#Race_Child: 1 Hispanic en 3 White samen, 2 voor Black
+#Race_Child: 1 for Hispanic and 3 for White (together), 2 for Black
 Hispanic <- excluded_the_ones_that_died %>%
   filter(Race_Child == 1) %>%
   mutate(Race_Child_Correct = "Hispanic")
@@ -171,7 +176,7 @@ Black <- excluded_the_ones_that_died %>%
 races_combined <- bind_rows(Hispanic, White, Black, .id = NULL)
 
 #Ever_HS, Ever_Preschool, None???
-#Ever_HS --> 1, Ever_Preschool --> 1, None: bij ze alle twee 0????
+#Ever_HS --> 1, Ever_Preschool --> 1, None: if there's a 0 for both of them??
 HeadStart_Correct <- races_combined %>%
   mutate(HeadStart = Ever_HS88 + Ever_HS90) %>%
   filter(HeadStart >= 1) %>%
@@ -891,6 +896,7 @@ results_v1 <-run_specs(df = for_specification_curve,
                                   "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
 
 plot_specs(results_v1)
+
 
 #end of the specification curve analysis
 

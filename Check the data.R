@@ -840,20 +840,10 @@ stargazer(mod1_for_4d_coeftest, mod2_for_4d_coeftest , type = "text", digits = 3
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:
-#doesn't work yet with plm, just do it with lm and column 1 2 and 3 of table 3
+#doesn't work yet with plm, just do it with lm and column 1 2 and 3 of table 3?
 
-#need to put MotherID as first column and time-variabel (= ...) as second column
-
-for_specification_curve <- for_table_3 %>%
-  mutate(year = as.factor(year), AgeTest_Yr = as.factor(AgeTest_Yr), MotherID = as.factor(MotherID)) %>%
-  select(MotherID, year, Test_std, HS2_FE90, Pre2_FE90, Male, Group_7to10, Group_11to14,
-           Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104,
-           HOME_Pct_0to3_imp, Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp,
-           Doctor_0to3_imp, Dentist_0to3_imp, Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp,
-           Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp, Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp,
-           Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex)
-
-#works, but just a lm model (needs to be a plm model) (with the six different 5to6, ...)
+#works, but just a lm model (still need to change HS2_FE90 and Pre to the six different HS_5to6, ...)
+#then, this will be column 2 of table 3
 results_v2 <- run_specs(df = for_table_3, 
                         y = c("Test_std"), 
                         x = c("HS2_FE90"), 
@@ -868,8 +858,18 @@ results_v2 <- run_specs(df = for_table_3,
 
 plot_specs(results_v2)
 
+#For column 5 of table 3: plm-model
+#need to put MotherID as first column (and time-variabel (= ...) as second column)
+for_specification_curve <- for_table_3 %>%
+  mutate(year = as.factor(year), AgeTest_Yr = as.factor(AgeTest_Yr), MotherID = as.factor(MotherID)) %>%
+  select(MotherID, year, Test_std, HS2_FE90, Pre2_FE90, Male, Group_7to10, Group_11to14,
+         Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104,
+         HOME_Pct_0to3_imp, Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp,
+         Doctor_0to3_imp, Dentist_0to3_imp, Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp,
+         Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp, Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp,
+         Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex)
 
-
+#copied this function from the R-code
 plm_entity_fe <- function(formula, data) {
                     plm(formula = formula,
                         data = data,
@@ -877,6 +877,7 @@ plm_entity_fe <- function(formula, data) {
                         effect = "individual")
                     }
 
+#doesn't work, gives the error: "Error in app$vspace(new_style$`margin-top` %||% 0) : attempt to apply non-function"
 results_v1 <-run_specs(df = for_specification_curve, 
                      y = c("Test_std"), 
                      x = c("HS2_FE90"), 
@@ -891,12 +892,7 @@ results_v1 <-run_specs(df = for_specification_curve,
 
 plot_specs(results_v1)
 
-
-
-
-
-
-
+#end of the specification curve analysis
 
 
 
@@ -905,4 +901,3 @@ plot_specs(results_v1)
 #Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)
 #Check for outliers and potentially influential observations. (Starting point for robustness analysis.)
 #Check basic associations between the variables.
-

@@ -205,7 +205,6 @@ education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headst
 #CORRECT DATA:
 #for table 3 and 4 (still for table 4)
 deming_table_4_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
-attach(deming_table_4_data)
 glimpse(deming_table_4_data)
 
 #FOR TABLE 1: (also for table 2 and 5)
@@ -274,13 +273,13 @@ glimpse(deming)
 deming_table_2_Attrit_and_pretreatmentindex <- deming %>%
   filter((is.na(HS2_FE90) == F) & MotherID != 12 & (Age2_Yr104>=19 | (DOB_Yr_Child==1985 & DOB_Mo_Child<9)))
 dim(deming_table_2_Attrit_and_pretreatmentindex) #1722x1230
-attach(deming_table_2_Attrit_and_pretreatmentindex)
+
 
 #for all the rest: (like in the Stata code)
 deming_table_2_rest <- deming %>%
   filter(Sample90_2 == 1)
 dim(deming_table_2_rest) #1251x1230
-attach(deming_table_2_rest)
+
 
 #Attrited: (correct)
 table2_Attrit <- plm(data = deming_table_2_Attrit_and_pretreatmentindex,
@@ -864,15 +863,23 @@ results_v2 <- run_specs(df = for_table_3,
 plot_specs(results_v2)
 
 #For column 5 of table 3: plm-model
-#need to put MotherID as first column (and time-variabel (= ...) as second column)
-for_specification_curve <- for_table_3 %>%
-  mutate(year = as.factor(year), AgeTest_Yr = as.factor(AgeTest_Yr), MotherID = as.factor(MotherID)) %>%
-  select(MotherID, year, Test_std, HS2_FE90, Pre2_FE90, Male, Group_7to10, Group_11to14,
+#need to put MotherID as first column (and ChildID as the second column???) (and time-variabel (= ...) as second column??)
+for_specification_curve <- deming_table_4_data %>%
+  mutate(year = as.factor(year), AgeTest_Yr = as.factor(AgeTest_Yr), MotherID = as.factor(MotherID), ChildID = as.factor(ChildID)) %>%
+  select(MotherID, year, ChildID, Test_std, HS2_FE90, Pre2_FE90, Male, Group_7to10, Group_11to14,
          Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104,
          HOME_Pct_0to3_imp, Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp,
          Doctor_0to3_imp, Dentist_0to3_imp, Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp,
          Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp, Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp,
          Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex)
+attach(for_specification_curve)
+
+final <- for_specification_curve %>%
+  filter(!duplicated(for_specification_curve[,1:2]))
+
+
+rlang::last_error()
+?duplicated
 
 #copied this function from the R-code
 plm_entity_fe <- function(formula, data) {
@@ -883,7 +890,7 @@ plm_entity_fe <- function(formula, data) {
                     }
 
 #doesn't work, gives the error: "Error in app$vspace(new_style$`margin-top` %||% 0) : attempt to apply non-function"
-results_v1 <-run_specs(df = for_specification_curve, 
+results_v1 <-run_specs(df = final, 
                      y = c("Test_std"), 
                      x = c("HS2_FE90"), 
                      model = c("lm", "plm_entity_fe"),

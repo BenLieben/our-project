@@ -14,8 +14,8 @@ load.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bac
 save.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 
 raw_data <- read_stata(paste(load.path, "data_Deming_2008_0217.dta", sep ="")) #loading in the data
-glimpse(raw_data)
 attach(raw_data)
+glimpse(raw_data)
 
 #1)
 #First step in a replication are the descriptive tables.
@@ -278,7 +278,7 @@ dim(deming_table_2_rest) #1251x1230
 attach(deming_table_2_rest)
 
 #Attrited: (correct)
-table2_Attrit <- plm(data = deming_table_2_Attrit_and_PPVT_and_pretreatmentindex,
+table2_Attrit <- plm(data = deming_table_2_Attrit_and_pretreatmentindex,
                        Attrit ~ HS2_FE90 + Pre2_FE90,
                        model = "within",
                        index = c("MotherID"),
@@ -578,7 +578,7 @@ mod1_coeftest <- coeftest(mod1, vcov. = vcovCL, cluster =~ MotherID)
 
 summary(mod1)
 stargazer(mod1_coeftest, type = "text", digits =3)
-
+#completely the same
 
 #COLUMN 2:
 mod2 <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
@@ -595,7 +595,7 @@ mod2_coeftest <- coeftest(mod2, vcov. = vcovCL, cluster =~ MotherID)
 
 summary(mod2)
 stargazer(mod2_coeftest, type = "text", digits =3)
-
+#some slight differences (less than 0.02 most often), 1 star wrong
 
 #COLUMN 3:
 mod3 <- lm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
@@ -613,6 +613,7 @@ mod3_coeftest <- coeftest(mod3, vcov. = vcovCL, cluster =~ MotherID)
 
 summary(mod3)
 stargazer(mod3_coeftest, type = "text", digits =3)
+#some slight differences (less than 0.02 most often), 1 star wrong
 
 #COLUMN 4:
 mod4 <- plm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
@@ -628,7 +629,7 @@ mod4_coeftest <- coeftest(mod4, vcov. = vcovHC(mod4, type = "sss", cluster = "gr
 
 summary(mod4)
 stargazer(mod4_coeftest, type = "text", digits = 3)
-
+#completely the same
   
 #COLUMN 5:
 mod5 <- plm(data = for_table_3, Test_std ~ HS_5to6 + HS_7to10 + HS_11to14 + Pre_5to6 + Pre_7to10 + Pre_11to14 +
@@ -647,7 +648,7 @@ mod5_coeftest <- coeftest(mod5, vcov. = vcovHC(mod5, type = "sss", cluster = "gr
 
 summary(mod5)
 stargazer(mod5_coeftest, type = "text", digits = 3)
-
+#some slight differences (less than 0.02 most often), 1 star wrong
 
 #FULL TABLE 3:
 stargazer(mod1_coeftest, mod2_coeftest, mod3_coeftest, mod4_coeftest, mod5_coeftest, type = "text", digits =3)
@@ -834,38 +835,30 @@ stargazer(mod2_for_4d_coeftest , type = "text", digits = 3)
 #combined in 1:
 stargazer(mod1_for_4d_coeftest, mod2_for_4d_coeftest , type = "text", digits = 3)
 
+#We combined this all in 1 big table in excel
+#For the values, again almost always less than 0.02 away, some differences in stars (highlighted in excel)
+
 
 #FOR SPECIFICATION CURVE ANALYSIS:
-#doesn't work yet with plm, just do it with lm and column 1 of table
+#doesn't work yet with plm, just do it with lm and column 1 2 and 3 of table 3
 
-'
-plm_entity_fe <- function(formula, data) {
-                    plm(formula = formula,
-                        data = data,
-                        model = "within",
-                        effect = "individual")
-                    }
-'
-'
-results <-run_specs(df = for_table_3, 
-                     y = c("Test_std"), 
-                     x = c("HS_5to6"), 
-                     model = c("plm_entity_fe"),
-                     controls = c("HS_7to10", "HS_11to14", "Pre_5to6", "Pre_7to10", "Pre_11to14",
-                                  "Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
-                                  "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",
-                                  "Male", "Age2_Yr104", "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp", "MomCare_imp",
-                                  "RelCare_imp", "NonRelCare_imp", "Breastfed_imp", "Doctor_0to3_imp", "Dentist_0to3_imp",
-                                  "Moth_WeightChange_imp", "Illness_1stYr_imp", "Premature_imp", "Insurance_0to3_imp",
-                                  "Medicaid_0to3_imp", "LogInc_0to3_imp", "LogIncAt3_imp", "Moth_HrsWorked_BefBirth_imp",
-                                  "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
-'
+#need to put MotherID as first column and time-variabel (= ...) as second column
 
+for_specification_curve <- for_table_3 %>%
+  mutate(year = as.factor(year), AgeTest_Yr = as.factor(AgeTest_Yr), MotherID = as.factor(MotherID)) %>%
+  select(MotherID, year, Test_std, HS2_FE90, Pre2_FE90, Male, Group_7to10, Group_11to14,
+           Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104,
+           HOME_Pct_0to3_imp, Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp,
+           Doctor_0to3_imp, Dentist_0to3_imp, Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp,
+           Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp, Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp,
+           Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex)
+
+#works, but just a lm model (needs to be a plm model) (with the six different 5to6, ...)
 results_v2 <- run_specs(df = for_table_3, 
                         y = c("Test_std"), 
                         x = c("HS2_FE90"), 
                         model = c("lm"),
-                        controls = c("Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
+                        controls = c("Pre2_FE90", "Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
                                      "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",
                                      "Male", "Age2_Yr104", "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp", "MomCare_imp",
                                      "RelCare_imp", "NonRelCare_imp", "Breastfed_imp", "Doctor_0to3_imp", "Dentist_0to3_imp",
@@ -874,6 +867,39 @@ results_v2 <- run_specs(df = for_table_3,
                                      "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
 
 plot_specs(results_v2)
+
+
+
+plm_entity_fe <- function(formula, data) {
+                    plm(formula = formula,
+                        data = data,
+                        model = "within",
+                        effect = "individual")
+                    }
+
+results_v1 <-run_specs(df = for_specification_curve, 
+                     y = c("Test_std"), 
+                     x = c("HS2_FE90"), 
+                     model = c("lm", "plm_entity_fe"),
+                     controls = c("Pre2_FE90", "Male", "Group_7to10", "Group_11to14",
+                                  "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",
+                                  "Male", "Age2_Yr104", "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp", "MomCare_imp",
+                                  "RelCare_imp", "NonRelCare_imp", "Breastfed_imp", "Doctor_0to3_imp", "Dentist_0to3_imp",
+                                  "Moth_WeightChange_imp", "Illness_1stYr_imp", "Premature_imp", "Insurance_0to3_imp",
+                                  "Medicaid_0to3_imp", "LogInc_0to3_imp", "LogIncAt3_imp", "Moth_HrsWorked_BefBirth_imp",
+                                  "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
+
+plot_specs(results_v1)
+
+
+
+
+
+
+
+
+
+
 
 #2)
 #Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)

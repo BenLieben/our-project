@@ -844,15 +844,30 @@ stargazer(mod1_for_4d_coeftest, mod2_for_4d_coeftest , type = "text", digits = 3
 
 
 #FOR SPECIFICATION CURVE ANALYSIS:
-#doesn't work yet with plm, just do it with lm and column 1 2 and 3 of table 3?
 
-#works, but just a lm model (still need to change HS2_FE90 and Pre to the six different HS_5to6, ...)
+#For column 5 of table 3: plm-model
+#need to put MotherID as first column and ChildID as the second column
+for_specification_curve <- deming_table_4_data %>%
+  mutate(year = as.factor(year), AgeTest_Yr = as.factor(AgeTest_Yr), MotherID = as.factor(MotherID), ChildID = as.factor(ChildID)) %>%
+  select(MotherID, ChildID, year, Test_std, HS_5to6, HS_7to10, HS_11to14, Pre_5to6, Pre_7to10, Pre_11to14, Male, Group_7to10, Group_11to14, AgeTest_Yr,
+         Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104,
+         HOME_Pct_0to3_imp, Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp,
+         Doctor_0to3_imp, Dentist_0to3_imp, Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp,
+         Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp, Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp,
+         Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex)
+attach(for_specification_curve)
+
+#remove duplicates
+final <- for_specification_curve %>%
+  filter(!duplicated(for_specification_curve[,1:2]))
+
+#works, but just a lm model
 #then, this will be column 2 of table 3
 results_v2 <- run_specs(df = for_table_3, 
                         y = c("Test_std"), 
-                        x = c("HS2_FE90"), 
+                        x = c("HS_5to6", "HS_7to10", "HS_11to14", "Pre_5to6", "Pre_7to10", "Pre_11to14"), 
                         model = c("lm"),
-                        controls = c("Pre2_FE90", "Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
+                        controls = c("Male", "factor(year)", "Group_7to10", "Group_11to14", "factor(AgeTest_Yr)",
                                      "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",
                                      "Male", "Age2_Yr104", "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp", "MomCare_imp",
                                      "RelCare_imp", "NonRelCare_imp", "Breastfed_imp", "Doctor_0to3_imp", "Dentist_0to3_imp",
@@ -862,26 +877,7 @@ results_v2 <- run_specs(df = for_table_3,
 
 plot_specs(results_v2)
 
-#For column 5 of table 3: plm-model
-#need to put MotherID as first column (and ChildID as the second column???) (and time-variabel (= ...) as second column??)
-for_specification_curve <- deming_table_4_data %>%
-  mutate(year = as.factor(year), AgeTest_Yr = as.factor(AgeTest_Yr), MotherID = as.factor(MotherID), ChildID = as.factor(ChildID)) %>%
-  select(MotherID, year, ChildID, Test_std, HS2_FE90, Pre2_FE90, Male, Group_7to10, Group_11to14,
-         Attrit, PPVTat3_imp, logBW_imp, VLow_BW_imp, Res_0to3_imp, HealthCond_before_imp, FirstBorn_imp, Male, Age2_Yr104,
-         HOME_Pct_0to3_imp, Father_HH_0to3_imp, GMom_0to3_imp, MomCare_imp, RelCare_imp, NonRelCare_imp, Breastfed_imp,
-         Doctor_0to3_imp, Dentist_0to3_imp, Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp,
-         Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp, Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_0to1_imp,
-         Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex)
-attach(for_specification_curve)
-
-final <- for_specification_curve %>%
-  filter(!duplicated(for_specification_curve[,1:2]))
-
-
-rlang::last_error()
-?duplicated
-
-#copied this function from the R-code
+#copied this function from the R-code provided by the prof
 plm_entity_fe <- function(formula, data) {
                     plm(formula = formula,
                         data = data,
@@ -889,12 +885,12 @@ plm_entity_fe <- function(formula, data) {
                         effect = "individual")
                     }
 
-#doesn't work, gives the error: "Error in app$vspace(new_style$`margin-top` %||% 0) : attempt to apply non-function"
+#works, this is column 5 of table 3
 results_v1 <-run_specs(df = final, 
                      y = c("Test_std"), 
-                     x = c("HS2_FE90"), 
-                     model = c("lm", "plm_entity_fe"),
-                     controls = c("Pre2_FE90", "Male", "Group_7to10", "Group_11to14",
+                     x = c("HS_5to6", "HS_7to10", "HS_11to14", "Pre_5to6", "Pre_7to10", "Pre_11to14"), 
+                     model = c("plm_entity_fe"),
+                     controls = c("Male", "year", "Group_7to10", "Group_11to14", "AgeTest_Yr",
                                   "Attrit", "PPVTat3_imp", "logBW_imp", "VLow_BW_imp", "Res_0to3_imp", "HealthCond_before_imp", "FirstBorn_imp",
                                   "Male", "Age2_Yr104", "HOME_Pct_0to3_imp", "Father_HH_0to3_imp", "GMom_0to3_imp", "MomCare_imp",
                                   "RelCare_imp", "NonRelCare_imp", "Breastfed_imp", "Doctor_0to3_imp", "Dentist_0to3_imp",

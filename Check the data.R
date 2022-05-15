@@ -131,15 +131,14 @@ age_combined <- bind_rows(age_mo_given_104, age_mo_given_102, age_mo_given_100, 
                           age_PPVT_given_90, age_PPVT_given_92, age_PPVT_given_94, age_PPVT_given_96, age_PPVT_given_98, 
                           age_PPVT_given_100, age_PPVT_given_102, age_PPVT_given_104, .id = NULL)
 
-#Want to account in some way for the fact that people are surveyed at different times of the year
+#"Want to account in some way for the fact that people are surveyed at different times of the year.
 #So I chose 4 years, 6 months - these kids are almost certainly too old to enroll if they are not already in the program
-#Estimates in the paper are not sensitive to this rule
+#Estimates in the paper are not sensitive to this rule"
 age_restriction <- age_combined %>%   #ages are in months and they chose 4.5 years --> 18.5*12 = 222
   filter(Age_correct >= 222)
 #still 5365 observations left, this is possible
 
 #Next restrict the sample to families with at least 2 age-eligible children;
-#families with at least 2 age-eligible children, group_by mother
 grouped_by_mother <- age_restriction %>%
   group_by(MotherID) %>%
   mutate(count = n()) %>%
@@ -150,8 +149,6 @@ at_least_2_children_restriction <- grouped_by_mother %>%
 #3967 still now, needs to be higher than 3698, so still possible (269 too many)
 
 #Exclude small number of kids who died prior to eligibility;
-#86: 68, 88: 77, 90: 70, 104: 92
-#why 104? 
 excluded_the_ones_that_died <- at_least_2_children_restriction %>%
   filter(Res86 != 8) %>%
   filter(Res88 != 8) %>%
@@ -197,8 +194,11 @@ education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headst
 
 
 
+
+
+
 #CORRECT DATA:
-#for table 3 and 4 (still for table 4)
+#for table 3 and 4
 deming_table_4_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
 glimpse(deming_table_4_data)
 
@@ -210,7 +210,7 @@ dim(deming)   #11470x1230
 deming_new <- deming %>%
   mutate(Race = case_when(Black == 1 ~ "Black", NonBlack == 1 ~ "White/Hispanic"),
     preschool_status = case_when(HS2_90 == 1 ~ "Head Start", Pre2_90 == 1 ~ "Preschool", None2_90 == 1 ~ "None")) %>%
-  select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>% #change name with mutate first?
+  select(Race, preschool_status, PermInc, MomDropout, MomSomeColl, AgeAFQT_std, HighGrade_GMom79) %>%
   drop_na()
 #should be 3698 observations
 
@@ -259,7 +259,7 @@ print(fixed_effects_table1_sd)
 #All the values are pretty much the same
 
 
-#FOR TABLE 2: deming data set, different names, each row is a regression
+#FOR TABLE 2: deming data set, each row is a regression
 glimpse(deming)
 
 #The paper filters the data for a specific subsample.
@@ -267,7 +267,6 @@ glimpse(deming)
 deming_table_2_Attrit_and_pretreatmentindex <- deming %>%
   filter((is.na(HS2_FE90) == F) & MotherID != 12 & (Age2_Yr104>=19 | (DOB_Yr_Child==1985 & DOB_Mo_Child<9)))
 dim(deming_table_2_Attrit_and_pretreatmentindex) #1722x1230
-
 
 #for all the rest: (like in the Stata code)
 deming_table_2_rest <- deming %>%
@@ -550,6 +549,7 @@ table2_pre_treatment_index <- plm(data = deming_table_2_rest,
 coef30 <- coeftest(table2_pre_treatment_index, vcov. = vcovHC(table2_pre_treatment_index, type = "sss", cluster = "group"))
 print(coef30)
 
+
 #FOR TABLE 3 and 4: (stargazer) (should be 4687/1251 sample size) (deming_table_4_data)
 #TABLE 3:
 #effect on test scores, by all HS_x and Pre_x, PermInc_std, impAFQT_std, MomHS, MomSomeColl
@@ -648,13 +648,12 @@ stargazer(mod5_coeftest, type = "text", digits = 3)
 
 #FULL TABLE 3:
 stargazer(mod1_coeftest, mod2_coeftest, mod3_coeftest, mod4_coeftest, mod5_coeftest, type = "text", digits =3)
-#column 1 and 4 completely the same, 2, 3 and 5 a bit off. Just difference between Stata and Rstudio?? We did everything the same.
+#column 1 and 4 completely the same, 2, 3 and 5 a bit off. Just difference between Stata and Rstudio? We did everything the same.
 
 
 #TABLE 4:
-#HS_5to6 + HS_7to10 + HS_11to14 in a new variable HS_5to14, Pre_5to6 + Pre_7to10 + Pre_11to14 in a new variable Pre_5to14
+#mutate HS_5to6 + HS_7to10 + HS_11to14 in a new variable HS_5to14 and Pre_5to6 + Pre_7to10 + Pre_11to14 in a new variable Pre_5to14
 #same for by race, by gender, by maternal AFQT
-
 for_table_4 <- deming_table_4_data %>%
   mutate(HS_5to14 = HS_5to6 + HS_7to10 + HS_11to14, Pre_5to14 = Pre_5to6 + Pre_7to10 + Pre_11to14,
          HS_Black_5to14 = HS_Black_5to6 + HS_Black_7to10 + HS_Black_11to14,
@@ -896,4 +895,5 @@ plot_specs(results_v1)
 
 
 #end of the specification curve analysis
+
 

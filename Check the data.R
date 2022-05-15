@@ -197,9 +197,6 @@ education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headst
 
 
 
-
-
-
 #CORRECT DATA:
 #for table 3 and 4 (still for table 4)
 deming_table_4_data <- read_stata(paste(load.path, "Deming_cleaned_data_up_to_Table 4.dta", sep ="")) #loading in the data
@@ -263,9 +260,9 @@ print(fixed_effects_table1_sd)
 
 
 #FOR TABLE 2: deming data set, different names, each row is a regression
-#The paper filters the data for a specific subsample.
 glimpse(deming)
 
+#The paper filters the data for a specific subsample.
 #for Attrit and pretreatmentindex: (like in the Stata code)
 deming_table_2_Attrit_and_pretreatmentindex <- deming %>%
   filter((is.na(HS2_FE90) == F) & MotherID != 12 & (Age2_Yr104>=19 | (DOB_Yr_Child==1985 & DOB_Mo_Child<9)))

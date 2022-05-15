@@ -561,8 +561,6 @@ for_table_3 <- deming_table_4_data %>%
          Moth_WeightChange_imp, Illness_1stYr_imp, Premature_imp, Insurance_0to3_imp, Medicaid_0to3_imp, LogInc_0to3_imp, LogIncAt3_imp,
          Moth_HrsWorked_BefBirth_imp, Moth_HrsWorked_Avg_0to3_imp, Moth_HrsWorked_0to1_imp, Moth_Smoke_BefBirth_imp, Alc_BefBirth_imp, PreTreatIndex) %>%
   drop_na()
-#In mother’s HH, 0–3 can't find it, describe it, is it Res_0to3_imp??? (Living in Mother's HouseHold 0-3 vs. Residence 0 - 3???)
-#describe difficulty finding the variables
 
 
 #COLUMN 1:
@@ -855,7 +853,8 @@ attach(for_specification_curve)
 final <- for_specification_curve %>%
   filter(!duplicated(for_specification_curve[,1:2]))
 
-#works, but just a lm model
+#---------------------------------------------------------------------------------------------------------------------------------------------------
+#works, but just a lm model, we won't use this in our paper
 #then, this will be column 2 of table 3
 results_v2 <- run_specs(df = for_table_3, 
                         y = c("Test_std"), 
@@ -870,6 +869,7 @@ results_v2 <- run_specs(df = for_table_3,
                                      "Moth_HrsWorked_0to1_imp", "Moth_Smoke_BefBirth_imp", "Alc_BefBirth_imp", "PreTreatIndex"))
 
 plot_specs(results_v2)
+#----------------------------------------------------------------------------------------------------------------------------------------------------
 
 #copied this function from the R-code provided by the prof
 plm_entity_fe <- function(formula, data) {
@@ -897,10 +897,3 @@ plot_specs(results_v1)
 
 #end of the specification curve analysis
 
-
-
-
-#2)
-#Check whether the types of variables are correctly identified. (Starting point for robustness analysis.)
-#Check for outliers and potentially influential observations. (Starting point for robustness analysis.)
-#Check basic associations between the variables.

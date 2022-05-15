@@ -854,7 +854,7 @@ final <- for_specification_curve %>%
   filter(!duplicated(for_specification_curve[,1:2]))
 
 #---------------------------------------------------------------------------------------------------------------------------------------------------
-#works, but just a lm model, we won't use this in our paper
+#works, but just a lm model, we won't use this in our paper, only added to appendix
 #then, this will be column 2 of table 3
 results_v2 <- run_specs(df = for_table_3, 
                         y = c("Test_std"), 

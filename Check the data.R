@@ -23,7 +23,6 @@ load.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bac
 save.path <- "C:\\Users\\ben-l\\OneDrive\\Documenten\\2021-2022\\semester 2\\bachelorproject\\our project\\" #change this so it's how you want it
 
 raw_data <- read_stata(paste(load.path, "data_Deming_2008_0217.dta", sep ="")) #loading in the data
-attach(raw_data)
 glimpse(raw_data)
 
 #Get the correct data for the descriptive tables
@@ -175,8 +174,7 @@ Black <- excluded_the_ones_that_died %>%
 
 races_combined <- bind_rows(Hispanic, White, Black, .id = NULL)
 
-#Ever_HS, Ever_Preschool, None???
-#Ever_HS --> 1, Ever_Preschool --> 1, None: if there's a 0 for both of them??
+#Head start: Ever_HS --> 1, Preschool: Ever_Preschool --> 1, None: if there's a 0 for both of them
 HeadStart_Correct <- races_combined %>%
   mutate(HeadStart = Ever_HS88 + Ever_HS90) %>%
   filter(HeadStart >= 1) %>%
@@ -194,7 +192,7 @@ No_Headstart_or_Preschool <- races_combined %>%
   filter(Pre_School == 0) %>%
   mutate(Education = "None")
 
-education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headstart, No_Preschool, .id = NULL)
+education_combined <- bind_rows(HeadStart_Correct, Pre_School_Correct, No_Headstart_or_Preschool, .id = NULL)
 #too much, something went wrong
 
 
@@ -235,7 +233,7 @@ print(deming_table1_sd)
 #because of rounding, mother some coll with HS (white) slightly different
 
 
-#fixed-effect: siblings differentially participate in Head Start, other preschools, or no preschool.
+#fixed-effect: siblings differently participate in Head Start, other preschools, or no preschool.
 fixed_effects <- deming %>%
   filter(Elig2_90 == 1)
 
@@ -262,7 +260,6 @@ print(fixed_effects_table1_sd)
 
 #We used excel to put it in 1 big table like they have in the paper and we compare the values
 #All the values are pretty much the same
-#FOR PAPER: document very well, it's not documented well in theirs (definitely to get to the final data)
 
 
 #FOR TABLE 2: deming data set, different names, each row is a regression
